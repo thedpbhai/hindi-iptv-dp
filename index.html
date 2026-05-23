@@ -26,7 +26,6 @@
             color: var(--text);
             min-height: 100vh;
         }
-        /* TOP BAR */
         .topbar {
             display: flex;
             align-items: center;
@@ -125,7 +124,6 @@
             font-weight: 700;
             border: none;
         }
-        /* NOTIFICATION */
         .notification {
             position: fixed;
             top: 80px;
@@ -144,13 +142,11 @@
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
-        /* MAIN */
         .main-content {
             max-width: 1300px;
             margin: 0 auto;
             padding: 15px;
         }
-        /* PLAYER */
         .video-wrapper {
             position: relative;
             background: #000;
@@ -214,7 +210,6 @@
         .action-chip:hover { background: #333; }
         .action-chip.liked { color: #ff0000; border-color: #ff0000; }
         .view-count { font-size: 0.75rem; color: #888; }
-        /* CHANNEL STRIP */
         .section-header {
             display: flex;
             align-items: center;
@@ -253,12 +248,19 @@
         .card-thumb {
             width: 100%;
             aspect-ratio: 16/10;
-            background: linear-gradient(135deg, #1a1a2e, #252550);
+            background: #1a1a2e;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 2.2rem;
             position: relative;
+            overflow: hidden;
+        }
+        .card-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 10px;
         }
         .card-fav {
             position: absolute;
@@ -273,6 +275,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            z-index: 5;
         }
         .card-fav.favorited { color: #ffd700; }
         .card-info { padding: 8px 10px; }
@@ -303,7 +306,6 @@
             0%,100% { opacity: 1; }
             50% { opacity: 0.3; }
         }
-        /* FOOTER */
         .sponsor-footer {
             text-align: center;
             padding: 18px;
@@ -313,7 +315,6 @@
             margin-top: 25px;
         }
         .sponsor-footer a { color: #3ea6ff; text-decoration: none; font-weight: 600; }
-        /* RESPONSIVE */
         @media (max-width: 600px) {
             .topbar { padding: 8px 10px; }
             .search-box { order: 5; max-width: 100%; flex: 100%; }
@@ -325,10 +326,8 @@
 </head>
 <body>
 
-    <!-- NOTIFICATION -->
     <div class="notification" id="notification"></div>
 
-    <!-- TOP BAR -->
     <div class="topbar">
         <div class="logo" onclick="location.reload()">
             <div class="logo-icon">▶</div>
@@ -346,9 +345,7 @@
         </div>
     </div>
 
-    <!-- MAIN -->
     <div class="main-content">
-        <!-- PLAYER -->
         <div class="video-wrapper">
             <video id="videoPlayer" controls style="display:none;"></video>
             <div id="statusOverlay">
@@ -360,11 +357,10 @@
             </div>
         </div>
 
-        <!-- VIDEO INFO -->
         <div class="vid-info">
             <div class="vid-left">
                 <h2 id="videoTitle">🔴 कोई चैनल नहीं चल रहा</h2>
-                <p id="videoMeta">16 हिंदी चैनल उपलब्ध</p>
+                <p id="videoMeta">5 हिंदी चैनल उपलब्ध</p>
             </div>
             <div class="vid-actions">
                 <button class="action-chip" id="likeBtn" onclick="toggleLike()">👍 <span id="likeCount">0</span></button>
@@ -373,15 +369,13 @@
             </div>
         </div>
 
-        <!-- CHANNELS -->
         <div class="section-header">
             <h3>📺 आपके लिए</h3>
-            <span style="font-size:0.75rem;color:#888;" id="channelCount">16 चैनल</span>
+            <span style="font-size:0.75rem;color:#888;" id="channelCount">5 चैनल</span>
         </div>
         <div class="channel-strip" id="channelStrip"></div>
     </div>
 
-    <!-- FOOTER -->
     <div class="sponsor-footer">
         🚀 <strong>Sponsored by:</strong> <a href="https://t.me/YourChannel" target="_blank">@YourChannel</a> | 
         <a href="https://www.paypal.com/your-link" target="_blank">❤️ Support Us</a> |
@@ -411,16 +405,12 @@
             document.body.classList.toggle('light-mode');
             localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
         }
-
         if (localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
 
         function toggleFullscreen() {
             const wrapper = document.querySelector('.video-wrapper');
-            if (document.fullscreenElement) {
-                document.exitFullscreen();
-            } else {
-                wrapper.requestFullscreen().catch(()=>{});
-            }
+            if (document.fullscreenElement) { document.exitFullscreen(); }
+            else { wrapper.requestFullscreen().catch(()=>{}); }
         }
 
         function refreshChannels() {
@@ -453,7 +443,8 @@
                 if (line.startsWith('#EXTINF:')) {
                     const name = (line.match(/,(.+)$/) || [,'Unknown'])[1];
                     const group = (line.match(/group-title="([^"]+)"/) || [,'Other'])[1];
-                    current = { name, group, url: '' };
+                    const logo = (line.match(/tvg-logo="([^"]+)"/) || [,''])[1];
+                    current = { name, group, logo, url: '' };
                 } else if (line && !line.startsWith('#') && current) {
                     current.url = line;
                     channels.push(current);
@@ -478,7 +469,7 @@
                 html += `
                 <div class="channel-card" onclick="playChannel(${idx})" id="card-${idx}">
                     <div class="card-thumb">
-                        📺
+                        ${ch.logo ? `<img src="${ch.logo}" onerror="this.style.display='none';this.parentElement.innerHTML='<span style=font-size:2.2rem>📺</span>'">` : '<span style="font-size:2.2rem;">📺</span>'}
                         <button class="card-fav ${isFav?'favorited':''}" onclick="event.stopPropagation();toggleFavorite('${ch.name.replace(/'/g,"\\'")}', this)">${isFav?'⭐':'☆'}</button>
                     </div>
                     <div class="card-info">
@@ -524,7 +515,6 @@
             if (!ch?.url) return;
             currentChannel = ch;
 
-            // View count
             viewCounts[ch.name] = (viewCounts[ch.name] || 0) + 1;
             localStorage.setItem('views', JSON.stringify(viewCounts));
             document.getElementById('viewCount').textContent = '👁️ ' + viewCounts[ch.name] + ' views';
@@ -563,10 +553,7 @@
         }
 
         function shareChannel() {
-            if (!currentChannel) {
-                notify('पहले कोई चैनल चलाएं!');
-                return;
-            }
+            if (!currentChannel) { notify('पहले कोई चैनल चलाएं!'); return; }
             const url = 'https://thedpbhai.github.io/hindi-iptv-dp/';
             if (navigator.share) {
                 navigator.share({ title: currentChannel.name, text: 'DP BHAI TV पर देखें: ' + currentChannel.name, url });
