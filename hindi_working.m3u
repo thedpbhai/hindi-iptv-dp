@@ -1,33 +1,16 @@
 #EXTM3U
-#EXTINF:-1 tvg-logo="https://i.imgur.com/L4qQj8M.png" group-title="Hindi Movies",Zee Anmol TV
-http://103.175.73.12:8080/live/256/256_0.m3u8
-#EXTINF:-1 tvg-logo="https://i.imgur.com/rWrKJ6N.png" group-title="Hindi Movies",Big Magic
-http://103.175.73.12:8080/live/13/13_0.m3u8
-#EXTINF:-1 tvg-logo="https://i.imgur.com/PJvQXqT.png" group-title="Hindi Movies",Zee Action
-http://103.175.73.12:8080/live/270/270_0.m3u8
-#EXTINF:-1 tvg-logo="https://i.imgur.com/VqoUJfG.png" group-title="Hindi Movies",B4U Kadak
+
+#EXTINF:-1 tvg-logo="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnTzI_MpMcdO-fRGbGcuKweRXtowdnfjAKTT_jaI47lw&s=10" group-title="Hindi Movies",B4U Kadak
 https://cdn-2.pishow.tv/live/227/master.m3u8
+
 #EXTINF:-1 tvg-logo="https://i.imgur.com/XYKmNlD.png" group-title="Hindi Movies",Goldmines
 https://cdn-2.pishow.tv/live/1459/master.m3u8
-#EXTINF:-1 tvg-logo="https://i.imgur.com/XYKmNlD.png" group-title="Hindi Movies",Goldmines Bollywood
-http://103.175.73.12:8080/live/52/52_0.m3u8
+
 #EXTINF:-1 tvg-logo="https://i.imgur.com/XYKmNlD.png" group-title="Hindi Movies",Goldmines Movies
 https://cdn-2.pishow.tv/live/1461/master.m3u8
+
 #EXTINF:-1 tvg-logo="https://i.imgur.com/XYKmNlD.png" group-title="Hindi Movies",Goldmines Movies 2
 https://cdn-2.pishow.tv/live/1460/master.m3u8
-#EXTINF:-1 tvg-logo="https://i.imgur.com/hQdYJm3.png" group-title="Hindi Movies",Manoranjan Prime
-http://103.175.73.12:8080/live/345/345_0.m3u8
-#EXTINF:-1 tvg-logo="https://i.imgur.com/hQdYJm3.png" group-title="Hindi Movies",Manoranjan Grand
-http://103.175.73.12:8080/live/19/19_0.m3u8
+
 #EXTINF:-1 tvg-logo="https://i.imgur.com/pQx7KsM.png" group-title="Hindi Movies",The Movie Club
 https://cc-r5hupcym5oehh.akamaized.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-r5hupcym5oehh/SBUM/RunnTV/BollyFlix_IN/BollyFlix_IN.m3u8
-#EXTINF:-1 tvg-logo="https://i.imgur.com/XjYRvNs.png" group-title="Hindi Music",Hindi Hits HD
-http://146.59.253.52:8080/hindihitshd/index.m3u8
-#EXTINF:-1 tvg-logo="https://i.imgur.com/dGQPZnL.png" group-title="Hindi Music",9XM
-http://103.175.73.12:8080/live/155/155_0.m3u8
-#EXTINF:-1 tvg-logo="https://i.imgur.com/EdLxJk4.png" group-title="Hindi Music",E24
-http://103.175.73.12:8080/live/159/159_0.m3u8
-#EXTINF:-1 tvg-logo="https://i.imgur.com/qWNnYvR.png" group-title="Hindi Music",Music India
-http://103.175.73.12:8080/live/158/158_0.m3u8
-#EXTINF:-1 tvg-logo="https://i.imgur.com/zVULSwK.png" group-title="Sports",DD Sports 2.0
-https://d3qs3d2rkhfqrt.cloudfront.net/out/v1/b17adfe543354fdd8d189b110617cddd/index.m3u8
