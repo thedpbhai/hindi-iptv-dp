@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>DP BHAI TV – Free Hindi IPTV</title>
+    <!-- HLS.js for m3u8 playback -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0f0f0f;
+            color: #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+        /* Header & Branding */
+        .header {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            padding: 8px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #e94560;
+            color: #fff;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            z-index: 100;
+        }
+        .header .logo {
+            font-size: 1.4rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        .header .logo span {
+            color: #e94560;
+        }
+        .header .sponsor-btn {
+            background: #e94560;
+            color: #fff;
+            border: none;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        .header .sponsor-btn:hover {
+            background: #ff6b6b;
+        }
+        /* Main Layout */
+        .container {
+            display: flex;
+            flex: 1;
+            height: calc(100vh - 50px);
+        }
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: #1a1a1a;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #333;
+            overflow-y: auto;
+        }
+        .sidebar h3 {
+            padding: 15px;
+            color: #e94560;
+            border-bottom: 1px solid #333;
+            font-size: 1rem;
+            text-align: center;
+            background: #111;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .channel-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 5px;
+        }
+        .channel-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            margin: 2px 0;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: 0.2s;
+            border: 1px solid transparent;
+            color: #ccc;
+        }
+        .channel-item:hover {
+            background: #252525;
+            border-color: #444;
+        }
+        .channel-item.active {
+            background: #e94560;
+            color: #fff;
+            font-weight: bold;
+            border-color: #ff6b6b;
+        }
+        .channel-item .ch-logo {
+            width: 30px;
+            height: 30px;
+            background: #333;
+            border-radius: 6px;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        /* Player Area */
+        .player-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #000;
+        }
+        .video-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: #0a0a0a;
+        }
+        video {
+            width: 100%;
+            height: 100%;
+            max-height: 70vh;
+            object-fit: contain;
+        }
+        #statusMessage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #888;
+            font-size: 1.2rem;
+        }
+        /* Sponsor Bar */
+        .sponsor-bar {
+            background: #1e1e1e;
+            padding: 10px;
+            border-top: 2px solid #e94560;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        .sponsor-bar a {
+            color: #e94560;
+            font-weight: bold;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        .sponsor-bar a:hover {
+            text-decoration: underline;
+        }
+        /* Responsive */
+        @media (max-width: 600px) {
+            .container {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                max-height: 40vh;
+                border-right: none;
+                border-bottom: 1px solid #333;
+            }
+            video {
+                max-height: 50vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">🇮🇳 DP <span>BHAI</span> TV</div>
+        <a href="#" class="sponsor-btn" onclick="alert('Sponsorship ke liye contact karein: your@email.com')">🤝 Sponsor Us</a>
+    </div>
+
+    <div class="container">
+        <!-- Sidebar with Channel List -->
+        <div class="sidebar">
+            <h3>📺 Hindi Channels (16)</h3>
+            <div class="channel-list" id="channelList"></div>
+        </div>
+
+        <!-- Main Player -->
+        <div class="player-section">
+            <div class="video-container">
+                <video id="videoPlayer" controls style="display: none;"></video>
+                <div id="statusMessage">👈 कृपया कोई चैनल चुनें</div>
+            </div>
+            <div class="sponsor-bar">
+                🚀 <strong>Sponsored by:</strong> <a href="https://t.me/YourChannel" target="_blank">@YourTelegram</a> | 
+                <a href="https://www.paypal.com/your-link" target="_blank">❤️ Donate</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Aapki playlist ka RAW URL
+        const M3U_URL = 'https://raw.githubusercontent.com/thedpbhai/hindi-iptv-dp/main/hindi_working.m3u';
+        
+        let channels = [];
+        let currentHls = null;
+        const video = document.getElementById('videoPlayer');
+        const statusDiv = document.getElementById('statusMessage');
+        const channelListDiv = document.getElementById('channelList');
+
+        async function fetchAndParseM3U() {
+            try {
+                const response = await fetch(M3U_URL);
+                if (!response.ok) throw new Error('Network error');
+                const text = await response.text();
+                parseM3U(text);
+            } catch (err) {
+                channelListDiv.innerHTML = '<p style="color:red; padding:20px;">❌ प्लेलिस्ट लोड नहीं हो पाई।</p>';
+            }
+        }
+
+        function parseM3U(data) {
+            const lines = data.split('\n');
+            channels = [];
+            let tempChannel = null;
+
+            lines.forEach(line => {
+                line = line.trim();
+                if (line.startsWith('#EXTINF:')) {
+                    const nameMatch = line.match(/,(.+)$/);
+                    const groupMatch = line.match(/group-title="([^"]+)"/);
+                    tempChannel = {
+                        name: nameMatch ? nameMatch[1] : 'Unknown',
+                        group: groupMatch ? groupMatch[1] : 'Other'
+                    };
+                } else if (line && !line.startsWith('#') && tempChannel) {
+                    tempChannel.url = line;
+                    channels.push(tempChannel);
+                    tempChannel = null;
+                }
+            });
+            renderChannelList();
+        }
+
+        function renderChannelList() {
+            if (channels.length === 0) {
+                channelListDiv.innerHTML = '<p style="padding:20px;">कोई चैनल नहीं मिला।</p>';
+                return;
+            }
+            let html = '';
+            channels.forEach((ch, index) => {
+                html += `
+                    <div class="channel-item" onclick="playChannel(${index})" id="ch-${index}">
+                        <div class="ch-logo">📺</div>
+                        <div>${ch.name} <br><small style="color:#888;">${ch.group}</small></div>
+                    </div>
+                `;
+            });
+            channelListDiv.innerHTML = html;
+        }
+
+        function playChannel(index) {
+            // UI update
+            document.querySelectorAll('.channel-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(`ch-${index}`).classList.add('active');
+            statusDiv.style.display = 'none';
+            video.style.display = 'block';
+
+            const selected = channels[index];
+            if (!selected || !selected.url) return;
+
+            // Destroy previous HLS instance
+            if (currentHls) {
+                currentHls.destroy();
+                currentHls = null;
+            }
+
+            const url = selected.url;
+
+            if (Hls.isSupported()) {
+                currentHls = new Hls();
+                currentHls.loadSource(url);
+                currentHls.attachMedia(video);
+                currentHls.on(Hls.Events.MANIFEST_PARSED, () => {
+                    video.play().catch(e => console.log('Autoplay prevented'));
+                });
+                currentHls.on(Hls.Events.ERROR, () => {
+                    statusDiv.style.display = 'block';
+                    statusDiv.innerText = '⚠️ यह चैनल अभी उपलब्ध नहीं है।';
+                });
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = url;
+                video.addEventListener('loadedmetadata', () => {
+                    video.play().catch(e => console.log('Autoplay prevented'));
+                });
+            } else {
+                statusDiv.style.display = 'block';
+                statusDiv.innerText = '❌ ब्राउज़र सपोर्ट नहीं करता।';
+            }
+        }
+
+        fetchAndParseM3U();
+    </script>
+</body>
+</html>
