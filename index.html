@@ -469,7 +469,7 @@
                 html += `
                 <div class="channel-card" onclick="playChannel(${idx})" id="card-${idx}">
                     <div class="card-thumb">
-                        ${ch.logo ? `<img src="${ch.logo}" onerror="this.style.display='none';this.parentElement.innerHTML='<span style=font-size:2.2rem>📺</span>'">` : '<span style="font-size:2.2rem;">📺</span>'}
+                        <span style="font-size:2.5rem;">${ch.logo ? '🎬' : '📺'}</span>
                         <button class="card-fav ${isFav?'favorited':''}" onclick="event.stopPropagation();toggleFavorite('${ch.name.replace(/'/g,"\\'")}', this)">${isFav?'⭐':'☆'}</button>
                     </div>
                     <div class="card-info">
