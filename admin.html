@@ -3,109 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DP BHAI TV - एडमिन पैनल</title>
+    <title>DP BHAI TV - सुपर एडमिन पैनल</title>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', sans-serif; background: #0a0a0a; color: #fff; padding: 20px; }
-        h1 { color: #ff0040; margin-bottom: 20px; }
-        .section { background: #1a1a1a; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #333; }
-        .section h2 { margin-bottom: 15px; font-size: 1.1rem; color: #ffd700; }
-        input, select, textarea { width: 100%; padding: 10px; margin: 5px 0 10px; background: #111; border: 1px solid #333; border-radius: 8px; color: #fff; font-size: 0.9rem; }
-        button { padding: 10px 20px; background: #ff0040; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; margin: 5px; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0a0a0a; color: #fff; padding: 15px; }
+        h1 { color: #ff0040; margin-bottom: 15px; font-size: 1.4rem; }
+        .section { background: #1a1a1a; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #333; }
+        .section h2 { margin-bottom: 10px; font-size: 1rem; color: #ffd700; }
+        input, select, textarea { width: 100%; padding: 8px; margin: 4px 0 8px; background: #111; border: 1px solid #333; border-radius: 8px; color: #fff; font-size: 0.85rem; }
+        button { padding: 8px 16px; background: #ff0040; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; margin: 3px; font-size: 0.8rem; }
         button.gold { background: #ffd700; color: #000; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { padding: 10px; border: 1px solid #333; text-align: left; font-size: 0.85rem; }
-        th { background: #111; color: #ffd700; }
-        .badge { padding: 4px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: 600; }
+        button.green { background: #00cc66; color: #000; }
+        button.blue { background: #3ea6ff; color: #fff; }
+        button.red { background: #ff0040; }
+        table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.8rem; }
+        th, td { padding: 8px; border: 1px solid #333; text-align: left; }
+        th { background: #111; color: #ffd700; font-size: 0.75rem; }
+        .badge { padding: 3px 8px; border-radius: 10px; font-size: 0.65rem; font-weight: 600; }
         .badge-free { background: #00cc66; color: #000; }
         .badge-paid { background: #ff0040; color: #fff; }
         .badge-vip { background: #ffd700; color: #000; }
-        .tabs { display: flex; gap: 5px; margin-bottom: 15px; flex-wrap: wrap; }
-        .tab { padding: 8px 16px; background: #222; border-radius: 20px; cursor: pointer; font-size: 0.8rem; border: 1px solid #333; }
+        .tabs { display: flex; gap: 4px; margin-bottom: 12px; flex-wrap: wrap; }
+        .tab { padding: 7px 14px; background: #222; border-radius: 18px; cursor: pointer; font-size: 0.75rem; border: 1px solid #333; }
         .tab.active { background: #ff0040; border-color: #ff0040; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        #loginScreen { max-width: 400px; margin: 100px auto; text-align: center; }
+        #loginScreen { max-width: 400px; margin: 80px auto; text-align: center; }
         #adminPanel { display: none; }
+        .edit-form { display: none; background: #111; padding: 12px; border-radius: 8px; margin-top: 8px; }
+        .edit-form.show { display: block; }
+        .sponsor-preview { background: #111; padding: 10px; border-radius: 8px; margin-top: 8px; text-align: center; }
+        .sponsor-preview img { max-width: 300px; border-radius: 8px; margin-top: 5px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin-top: 10px; }
+        .stat-card { background: #111; padding: 12px; border-radius: 8px; text-align: center; border: 1px solid #333; }
+        .stat-card .num { font-size: 1.5rem; font-weight: 700; color: #ffd700; }
+        .stat-card .lbl { font-size: 0.7rem; color: #888; }
     </style>
 </head>
 <body>
 
     <div id="loginScreen">
         <h1>👑 DP BHAI TV</h1>
-        <p style="color:#888;margin-bottom:20px;">एडमिन पैनल लॉगिन</p>
-        <input type="password" id="adminPassword" placeholder="एडमिन पासवर्ड डालें">
+        <p style="color:#888;margin-bottom:15px;">सुपर एडमिन पैनल</p>
+        <input type="password" id="adminPassword" placeholder="पासवर्ड">
         <button onclick="login()" style="width:100%;">लॉगिन करें</button>
     </div>
 
     <div id="adminPanel">
-        <h1>👑 DP BHAI TV - एडमिन पैनल</h1>
-        
+        <h1>👑 DP BHAI TV - सुपर एडमिन</h1>
+
+        <!-- STATS -->
+        <div class="stats-grid">
+            <div class="stat-card"><div class="num" id="statChannels">0</div><div class="lbl">चैनल्स</div></div>
+            <div class="stat-card"><div class="num" id="statPlans">0</div><div class="lbl">प्लान्स</div></div>
+            <div class="stat-card"><div class="num" id="statUsers">0</div><div class="lbl">यूजर्स</div></div>
+        </div>
+
         <div class="tabs">
             <div class="tab active" onclick="showTab('channels')">📺 चैनल्स</div>
             <div class="tab" onclick="showTab('plans')">💳 प्लान्स</div>
+            <div class="tab" onclick="showTab('sponsor')">📢 स्पॉन्सर</div>
             <div class="tab" onclick="showTab('qr')">📱 QR / UPI</div>
+            <div class="tab" onclick="showTab('users')">👥 यूजर्स</div>
             <div class="tab" onclick="showTab('settings')">⚙️ सेटिंग्स</div>
         </div>
 
+        <!-- CHANNELS TAB -->
         <div id="tab-channels" class="tab-content active">
             <div class="section">
-                <h2>नया चैनल जोड़ें</h2>
-                <input type="text" id="chName" placeholder="चैनल का नाम">
-                <input type="text" id="chUrl" placeholder="M3U8 स्ट्रीम लिंक">
-                <input type="text" id="chLogo" placeholder="लोगो URL">
-                <input type="text" id="chCategory" placeholder="कैटेगरी (Hindi Movies)">
+                <h2>➕ नया चैनल / एडिट</h2>
+                <input type="hidden" id="editId">
+                <input type="text" id="chName" placeholder="चैनल का नाम *">
+                <input type="text" id="chUrl" placeholder="M3U8 स्ट्रीम लिंक *">
+                <input type="text" id="chLogo" placeholder="लोगो / थंबनेल URL">
+                <input type="text" id="chCategory" placeholder="कैटेगरी (जैसे: Hindi Movies)">
                 <select id="chType">
                     <option value="free">🆓 फ्री</option>
                     <option value="paid">💲 पेड</option>
                     <option value="vip">👑 VIP</option>
                 </select>
-                <button onclick="addChannel()">चैनल जोड़ें</button>
+                <button onclick="saveChannel()" class="green">💾 सेव करें</button>
+                <button onclick="clearForm()">❌ क्लियर</button>
             </div>
             <div class="section">
-                <h2>सभी चैनल्स</h2>
-                <table id="channelsTable"></table>
+                <h2>📋 सभी चैनल्स</h2>
+                <div style="overflow-x:auto;">
+                    <table id="channelsTable"></table>
+                </div>
             </div>
         </div>
 
+        <!-- PLANS TAB -->
         <div id="tab-plans" class="tab-content">
             <div class="section">
-                <h2>नया प्लान जोड़ें</h2>
-                <input type="text" id="planName" placeholder="प्लान नाम (Silver/Gold/VIP)">
-                <input type="number" id="planPrice" placeholder="कीमत (₹)">
-                <input type="number" id="planDuration" placeholder="दिनों में अवधि">
-                <textarea id="planFeatures" placeholder="फीचर्स"></textarea>
-                <button onclick="addPlan()">प्लान जोड़ें</button>
+                <h2>➕ नया प्लान</h2>
+                <input type="text" id="planName" placeholder="प्लान नाम *">
+                <input type="number" id="planPrice" placeholder="कीमत (₹) *">
+                <input type="number" id="planDuration" placeholder="दिनों में अवधि *">
+                <textarea id="planFeatures" placeholder="फीचर्स (हर लाइन पर एक)" rows="3"></textarea>
+                <button onclick="addPlan()" class="green">💾 प्लान सेव करें</button>
             </div>
             <div class="section">
-                <h2>सभी प्लान्स</h2>
+                <h2>📋 सभी प्लान्स</h2>
                 <div id="plansList"></div>
             </div>
         </div>
 
-        <div id="tab-qr" class="tab-content">
+        <!-- SPONSOR TAB -->
+        <div id="tab-sponsor" class="tab-content">
             <div class="section">
-                <h2>UPI ID और QR कोड</h2>
-                <input type="text" id="upiId" placeholder="UPI ID (yourname@upi)">
-                <input type="text" id="qrImageUrl" placeholder="QR कोड इमेज URL">
-                <button onclick="saveQR()">सेव करें</button>
+                <h2>📢 स्पॉन्सर सेटिंग्स</h2>
+                <input type="text" id="sponsorName" placeholder="स्पॉन्सर का नाम">
+                <input type="text" id="sponsorLink" placeholder="स्पॉन्सर लिंक (Telegram/Website)">
+                <input type="text" id="sponsorImage" placeholder="स्पॉन्सर बैनर इमेज URL">
+                <input type="text" id="sponsorPopupText" placeholder="पॉपअप मैसेज">
+                <select id="sponsorDisplay">
+                    <option value="banner">🖼️ बैनर (नीचे)</option>
+                    <option value="popup">💬 पॉपअप (एंटर करते ही)</option>
+                    <option value="both">📢 दोनों</option>
+                </select>
+                <button onclick="saveSponsor()" class="gold">💾 स्पॉन्सर सेव करें</button>
+            </div>
+            <div class="section">
+                <h2>👁️ प्रीव्यू</h2>
+                <div class="sponsor-preview" id="sponsorPreview">
+                    <p style="color:#888;">कोई स्पॉन्सर सेट नहीं</p>
+                </div>
             </div>
         </div>
 
+        <!-- QR TAB -->
+        <div id="tab-qr" class="tab-content">
+            <div class="section">
+                <h2>📱 UPI / QR कोड</h2>
+                <input type="text" id="upiId" placeholder="UPI ID (yourname@upi)">
+                <input type="text" id="qrImageUrl" placeholder="QR कोड इमेज URL">
+                <button onclick="saveQR()" class="green">💾 सेव करें</button>
+            </div>
+        </div>
+
+        <!-- USERS TAB -->
+        <div id="tab-users" class="tab-content">
+            <div class="section">
+                <h2>👥 सभी यूजर्स</h2>
+                <div style="overflow-x:auto;">
+                    <table id="usersTable">
+                        <tr><th>यूजर ID</th><th>प्लान</th><th>एक्सपायरी</th><th>एक्शन</th></tr>
+                    </table>
+                </div>
+            </div>
+            <div class="section">
+                <h2>➕ मैन्युअल यूजर जोड़ें</h2>
+                <input type="text" id="newUserId" placeholder="यूजर ID">
+                <select id="newUserPlan">
+                    <option value="free">फ्री</option>
+                </select>
+                <input type="number" id="newUserDays" placeholder="कितने दिन?" value="30">
+                <button onclick="addUser()" class="blue">यूजर जोड़ें</button>
+            </div>
+        </div>
+
+        <!-- SETTINGS -->
         <div id="tab-settings" class="tab-content">
             <div class="section">
-                <h2>पासवर्ड बदलें</h2>
+                <h2>🔒 पासवर्ड बदलें</h2>
                 <input type="password" id="newPassword" placeholder="नया पासवर्ड">
                 <button onclick="changePassword()">बदलें</button>
             </div>
-            <button onclick="logout()">लॉगआउट</button>
+            <div class="section">
+                <h2>📤 डेटा एक्सपोर्ट</h2>
+                <button onclick="exportData()" class="blue">सारा डेटा दिखाओ</button>
+            </div>
+            <button onclick="logout()" class="red">🚪 लॉगआउट</button>
         </div>
     </div>
 
     <script>
-        // TERI FIREBASE CONFIG
         const firebaseConfig = {
             apiKey: "AIzaSyDy4pxl68z8N7yDZfKBpZbMkfcGxtBu1JQ",
             authDomain: "dpbhai-tv.firebaseapp.com",
@@ -114,65 +189,104 @@
             messagingSenderId: "361265848465",
             appId: "1:361265848465:web:bb2c78a3cbded7180d1f30"
         };
-
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const ADMIN_PASS = "dpbhai2026";
 
+        // ===== AUTH =====
         function login() {
-            const pass = document.getElementById('adminPassword').value;
-            if (pass === ADMIN_PASS || pass === "admin123") {
+            if (document.getElementById('adminPassword').value === ADMIN_PASS) {
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('adminPanel').style.display = 'block';
                 loadAll();
-            } else {
-                alert('❌ गलत पासवर्ड!');
-            }
+            } else { alert('❌ गलत पासवर्ड!'); }
         }
-
         function logout() {
             document.getElementById('loginScreen').style.display = 'block';
             document.getElementById('adminPanel').style.display = 'none';
         }
 
+        // ===== TABS =====
         function showTab(name) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             event.target.classList.add('active');
             document.getElementById('tab-'+name).classList.add('active');
+            if (name === 'users') loadUsers();
+            if (name === 'sponsor') loadSponsor();
         }
 
-        async function addChannel() {
-            await db.collection('channels').add({
+        // ===== CHANNELS =====
+        function clearForm() {
+            document.getElementById('editId').value = '';
+            document.getElementById('chName').value = '';
+            document.getElementById('chUrl').value = '';
+            document.getElementById('chLogo').value = '';
+            document.getElementById('chCategory').value = '';
+            document.getElementById('chType').value = 'free';
+        }
+
+        function editChannel(id, name, url, logo, cat, type) {
+            document.getElementById('editId').value = id;
+            document.getElementById('chName').value = name;
+            document.getElementById('chUrl').value = url;
+            document.getElementById('chLogo').value = logo || '';
+            document.getElementById('chCategory').value = cat || '';
+            document.getElementById('chType').value = type || 'free';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        async function saveChannel() {
+            const id = document.getElementById('editId').value;
+            const data = {
                 name: document.getElementById('chName').value,
                 url: document.getElementById('chUrl').value,
                 logo: document.getElementById('chLogo').value,
                 category: document.getElementById('chCategory').value,
-                type: document.getElementById('chType').value
-            });
-            alert('✅ जुड़ गया!');
+                type: document.getElementById('chType').value,
+                updatedAt: new Date().toISOString()
+            };
+            if (!data.name || !data.url) { alert('❌ नाम और URL ज़रूरी है!'); return; }
+
+            if (id) {
+                await db.collection('channels').doc(id).update(data);
+                alert('✅ चैनल अपडेट हो गया!');
+            } else {
+                await db.collection('channels').add({...data, createdAt: new Date().toISOString()});
+                alert('✅ नया चैनल जुड़ गया!');
+            }
+            clearForm();
             loadChannels();
         }
 
         async function loadChannels() {
             const snap = await db.collection('channels').get();
-            let html = '<tr><th>नाम</th><th>कैटेगरी</th><th>टाइप</th><th>एक्शन</th></tr>';
+            let html = '<tr><th>थंबनेल</th><th>नाम</th><th>कैटेगरी</th><th>टाइप</th><th>एक्शन</th></tr>';
             snap.forEach(doc => {
                 const c = doc.data();
-                html += `<tr><td>${c.name}</td><td>${c.category}</td>
-                <td><span class="badge badge-${c.type}">${c.type}</span></td>
-                <td><button onclick="db.collection('channels').doc('${doc.id}').delete();loadChannels();">🗑️</button></td></tr>`;
+                html += `<tr>
+                    <td>${c.logo ? `<img src="${c.logo}" style="width:40px;height:40px;object-fit:contain;border-radius:6px;">` : '📺'}</td>
+                    <td>${c.name}</td><td>${c.category||'-'}</td>
+                    <td><span class="badge badge-${c.type||'free'}">${(c.type||'free').toUpperCase()}</span></td>
+                    <td>
+                        <button onclick="editChannel('${doc.id}','${c.name.replace(/'/g,"\\'")}','${c.url.replace(/'/g,"\\'")}','${(c.logo||'').replace(/'/g,"\\'")}','${(c.category||'').replace(/'/g,"\\'")}','${c.type||'free'}')" class="blue">✏️</button>
+                        <button onclick="db.collection('channels').doc('${doc.id}').delete();loadChannels();" class="red">🗑️</button>
+                    </td></tr>`;
             });
-            document.getElementById('channelsTable').innerHTML = html;
+            document.getElementById('channelsTable').innerHTML = html || '<tr><td colspan="5">कोई चैनल नहीं</td></tr>';
+            document.getElementById('statChannels').textContent = snap.size;
         }
 
+        // ===== PLANS =====
         async function addPlan() {
-            await db.collection('plans').add({
+            const data = {
                 name: document.getElementById('planName').value,
                 price: document.getElementById('planPrice').value,
                 duration: document.getElementById('planDuration').value,
                 features: document.getElementById('planFeatures').value
-            });
+            };
+            if (!data.name) { alert('❌ प्लान नाम ज़रूरी है!'); return; }
+            await db.collection('plans').add(data);
             alert('✅ प्लान जुड़ गया!');
             loadPlans();
         }
@@ -182,15 +296,43 @@
             let html = '';
             snap.forEach(doc => {
                 const p = doc.data();
-                html += `<div style="background:#111;padding:10px;border-radius:8px;margin:5px 0;">
-                    <b>${p.name}</b> - ₹${p.price} / ${p.duration} दिन
-                    <br><small>${p.features}</small>
-                    <br><button onclick="db.collection('plans').doc('${doc.id}').delete();loadPlans();">🗑️</button>
+                html += `<div style="background:#111;padding:10px;border-radius:8px;margin:5px 0;display:flex;justify-content:space-between;align-items:center;">
+                    <div><b>${p.name}</b> - ₹${p.price} / ${p.duration} दिन<br><small>${p.features||''}</small></div>
+                    <button onclick="db.collection('plans').doc('${doc.id}').delete();loadPlans();" class="red">🗑️</button>
                 </div>`;
             });
             document.getElementById('plansList').innerHTML = html || '<p>कोई प्लान नहीं</p>';
+            document.getElementById('statPlans').textContent = snap.size;
         }
 
+        // ===== SPONSOR =====
+        async function saveSponsor() {
+            await db.collection('settings').doc('sponsor').set({
+                name: document.getElementById('sponsorName').value,
+                link: document.getElementById('sponsorLink').value,
+                image: document.getElementById('sponsorImage').value,
+                popupText: document.getElementById('sponsorPopupText').value,
+                display: document.getElementById('sponsorDisplay').value
+            });
+            alert('✅ स्पॉन्सर सेव हो गया!');
+            loadSponsor();
+        }
+
+        async function loadSponsor() {
+            const doc = await db.collection('settings').doc('sponsor').get();
+            const prev = document.getElementById('sponsorPreview');
+            if (doc.exists) {
+                const s = doc.data();
+                prev.innerHTML = `<b>${s.name||'स्पॉन्सर'}</b><br>
+                    ${s.image ? `<img src="${s.image}" style="max-width:100%;"><br>` : ''}
+                    <a href="${s.link||'#'}" style="color:#3ea6ff;">${s.link||'#'}</a><br>
+                    <small>डिस्प्ले: ${s.display}</small>`;
+            } else {
+                prev.innerHTML = '<p style="color:#888;">कोई स्पॉन्सर सेट नहीं</p>';
+            }
+        }
+
+        // ===== QR =====
         async function saveQR() {
             await db.collection('settings').doc('payment').set({
                 upiId: document.getElementById('upiId').value,
@@ -199,11 +341,60 @@
             alert('✅ सेव हो गया!');
         }
 
-        async function changePassword() {
-            alert('✅ पासवर्ड: ' + document.getElementById('newPassword').value + ' (अभी के लिए सेव)');
+        // ===== USERS =====
+        async function loadUsers() {
+            const snap = await db.collection('users').get();
+            let html = '<tr><th>यूजर ID</th><th>प्लान</th><th>एक्सपायरी</th><th>एक्शन</th></tr>';
+            snap.forEach(doc => {
+                const u = doc.data();
+                html += `<tr>
+                    <td>${doc.id.substring(0,15)}...</td>
+                    <td>${u.plan||'free'}</td>
+                    <td>${u.expiry ? new Date(u.expiry).toLocaleDateString('hi-IN') : 'N/A'}</td>
+                    <td><button onclick="db.collection('users').doc('${doc.id}').delete();loadUsers();" class="red">🗑️</button></td>
+                </tr>`;
+            });
+            document.getElementById('usersTable').innerHTML = html;
+            document.getElementById('statUsers').textContent = snap.size;
         }
 
-        function loadAll() { loadChannels(); loadPlans(); }
+        async function addUser() {
+            const id = document.getElementById('newUserId').value;
+            const plan = document.getElementById('newUserPlan').value;
+            const days = parseInt(document.getElementById('newUserDays').value);
+            if (!id) { alert('❌ यूजर ID ज़रूरी है!'); return; }
+            const expiry = new Date();
+            expiry.setDate(expiry.getDate() + days);
+            await db.collection('users').doc(id).set({ plan, expiry: expiry.toISOString() });
+            alert('✅ यूजर जुड़ गया!');
+            loadUsers();
+        }
+
+        // ===== SETTINGS =====
+        function changePassword() {
+            alert('✅ नया पासवर्ड: ' + document.getElementById('newPassword').value);
+        }
+
+        async function exportData() {
+            const channels = await db.collection('channels').get();
+            const plans = await db.collection('plans').get();
+            const users = await db.collection('users').get();
+            let data = '=== CHANNELS ===\n';
+            channels.forEach(d => data += JSON.stringify(d.data()) + '\n');
+            data += '\n=== PLANS ===\n';
+            plans.forEach(d => data += JSON.stringify(d.data()) + '\n');
+            data += '\n=== USERS ===\n';
+            users.forEach(d => data += JSON.stringify(d.data()) + '\n');
+            alert('डेटा कंसोल में देखें!');
+            console.log(data);
+        }
+
+        function loadAll() {
+            loadChannels();
+            loadPlans();
+            loadSponsor();
+            loadUsers();
+        }
     </script>
 </body>
 </html>
