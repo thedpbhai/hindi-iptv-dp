@@ -1,192 +1,362 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="hi" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DP BHAI TV • हिंदी लाइव चैनल</title>
+    <title>DP BHAI TV 👑 प्रीमियम IPTV</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #030303;
-            --surface: #0f0f0f;
-            --card: #1a1a1a;
-            --border: #262626;
-            --text: #f1f1f1;
-            --text-secondary: #aaa;
-            --accent: #ff0033;
-            --gold: #ffc107;
-            --blue: #3ea6ff;
-            --radius: 14px;
+            --bg: #000000;
+            --surface: #0a0a0a;
+            --card: #111111;
+            --border: #1f1f1f;
+            --text: #ffffff;
+            --text-secondary: #999999;
+            --accent: #ff0040;
+            --accent-glow: rgba(255,0,64,0.3);
+            --gold: #ffd700;
+            --gold-glow: rgba(255,215,0,0.2);
+            --blue: #0095ff;
+            --gradient-1: linear-gradient(135deg, #ff0040, #ff6b00);
+            --gradient-2: linear-gradient(135deg, #1a1a2e, #0f0f23);
+            --glass: rgba(255,255,255,0.03);
+            --glass-border: rgba(255,255,255,0.06);
+            --shadow: 0 20px 60px rgba(0,0,0,0.5);
+            --radius: 16px;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
+        [data-theme="light"] {
+            --bg: #f5f5f7;
+            --surface: #ffffff;
+            --card: #ffffff;
+            --border: #e0e0e0;
+            --text: #111111;
+            --text-secondary: #666666;
+            --accent: #e6003a;
+            --accent-glow: rgba(230,0,58,0.15);
+            --gold: #cc9900;
+            --gold-glow: rgba(204,153,0,0.15);
+            --gradient-1: linear-gradient(135deg, #e6003a, #ff6b00);
+            --gradient-2: linear-gradient(135deg, #f0f0f5, #e8e8f0);
+            --glass: rgba(0,0,0,0.02);
+            --glass-border: rgba(0,0,0,0.06);
+            --shadow: 0 20px 60px rgba(0,0,0,0.08);
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
+            font-family: 'Inter', 'Segoe UI', sans-serif;
             background: var(--bg);
             color: var(--text);
             min-height: 100vh;
+            transition: background var(--transition), color var(--transition);
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* TOP BAR */
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+
+        /* ===== TOP BAR ===== */
         .topbar {
             display: flex; align-items: center; justify-content: space-between;
-            padding: 10px 20px; background: var(--surface);
-            border-bottom: 1px solid var(--border);
-            position: sticky; top: 0; z-index: 100; gap: 12px; flex-wrap: wrap;
+            padding: 14px 24px;
+            background: var(--glass);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky; top: 0; z-index: 1000; gap: 16px;
+            transition: all var(--transition);
         }
-        .logo { font-size: 1.3rem; font-weight: 800; color: var(--accent); cursor: pointer; white-space: nowrap; }
-        .logo span { color: #fff; }
-        .search-box {
-            display: flex; flex: 1; max-width: 400px; position: relative;
+        .logo-group {
+            display: flex; align-items: center; gap: 12px; cursor: pointer;
         }
-        .search-box input {
-            width: 100%; padding: 9px 40px 9px 15px;
+        .logo-icon {
+            width: 40px; height: 40px;
+            background: var(--gradient-1);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; font-weight: 900; color: #fff;
+            box-shadow: 0 8px 25px var(--accent-glow);
+        }
+        .logo-text {
+            font-size: 1.4rem; font-weight: 800; letter-spacing: -0.5px;
+        }
+        .logo-text .accent { color: var(--accent); }
+        .logo-text .premium {
+            font-size: 0.5rem; background: var(--gradient-1); color: #fff;
+            padding: 2px 6px; border-radius: 4px; vertical-align: super;
+            margin-left: 2px; letter-spacing: 1px;
+        }
+
+        .search-wrapper {
+            flex: 1; max-width: 420px; position: relative;
+        }
+        .search-wrapper input {
+            width: 100%; padding: 11px 45px 11px 18px;
             background: var(--card); border: 1px solid var(--border);
-            border-radius: 25px; color: var(--text); font-size: 0.85rem; outline: none;
+            border-radius: 30px; color: var(--text); font-size: 0.88rem;
+            outline: none; transition: var(--transition); font-family: 'Inter', sans-serif;
         }
-        .search-box input:focus { border-color: var(--blue); }
-        .search-icon { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #888; }
-        .top-btns { display: flex; gap: 8px; }
+        .search-wrapper input:focus {
+            border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-glow);
+        }
+        .search-wrapper .s-icon {
+            position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+            font-size: 1rem; opacity: 0.5;
+        }
+
+        .action-group { display: flex; gap: 8px; align-items: center; }
         .btn {
-            padding: 8px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;
-            cursor: pointer; text-decoration: none; border: none; white-space: nowrap;
+            padding: 9px 18px; border-radius: 25px; font-size: 0.8rem; font-weight: 600;
+            cursor: pointer; text-decoration: none; border: none; transition: var(--transition);
+            font-family: 'Inter', sans-serif; white-space: nowrap;
+            display: flex; align-items: center; gap: 6px;
         }
-        .btn-live { background: var(--accent); color: #fff; animation: pulse 2s infinite; }
-        @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,0,51,.4)} 50%{box-shadow:0 0 0 10px rgba(255,0,51,0)} }
-        .btn-sponsor { background: var(--gold); color: #000; }
-        .btn-refresh { background: var(--card); color: #fff; border: 1px solid var(--border); }
+        .btn-icon { width: 36px; height: 36px; padding: 0; justify-content: center; border-radius: 50%; font-size: 1rem; }
+        .btn-ghost { background: var(--card); color: var(--text); border: 1px solid var(--border); }
+        .btn-ghost:hover { background: var(--border); }
+        .btn-accent {
+            background: var(--gradient-1); color: #fff;
+            box-shadow: 0 8px 25px var(--accent-glow); animation: accentPulse 3s infinite;
+        }
+        @keyframes accentPulse {
+            0%,100% { box-shadow: 0 8px 25px var(--accent-glow); }
+            50% { box-shadow: 0 12px 35px rgba(255,0,64,0.5); }
+        }
+        .btn-gold {
+            background: var(--gold); color: #000; font-weight: 700;
+            box-shadow: 0 8px 25px var(--gold-glow);
+        }
+        .btn-gold:hover { filter: brightness(1.15); transform: translateY(-1px); }
 
-        /* MAIN */
-        .main-content { max-width: 1400px; margin: 0 auto; padding: 15px; }
+        /* ===== MAIN ===== */
+        .main-content { max-width: 1500px; margin: 0 auto; padding: 24px 20px; }
 
-        /* PLAYER */
-        .video-wrapper {
+        /* ===== PLAYER ===== */
+        .player-card {
             background: #000; border-radius: var(--radius); overflow: hidden;
-            aspect-ratio: 16/9; margin-bottom: 12px; position: relative;
-            border: 1px solid var(--border);
+            aspect-ratio: 16/9; position: relative; margin-bottom: 16px;
+            border: 1px solid var(--border); box-shadow: var(--shadow);
         }
         video { width: 100%; height: 100%; object-fit: contain; display: block; }
         #statusOverlay {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            text-align: center; color: #555;
+            text-align: center; opacity: 0.5;
         }
-        .now-playing {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 10px 0; border-bottom: 1px solid #222; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;
-        }
-        .now-playing h2 { font-size: 1.1rem; font-weight: 700; }
-        .now-playing .meta { font-size: 0.78rem; color: #888; }
+        #statusOverlay .s-icon-large { font-size: 5rem; display: block; margin-bottom: 12px; }
 
-        /* CATEGORY SECTIONS */
-        .cat-section { margin-bottom: 25px; }
-        .cat-header {
-            display: flex; align-items: center; gap: 8px;
-            font-size: 1rem; font-weight: 700; margin-bottom: 12px;
+        .info-bar {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 0; border-bottom: 1px solid var(--border);
+            margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
         }
-        .cat-icon { font-size: 1.3rem; }
-        .cat-count { font-size: 0.75rem; color: #888; font-weight: 400; }
+        .info-bar h2 { font-size: 1.2rem; font-weight: 700; letter-spacing: -0.3px; }
+        .info-bar .meta { font-size: 0.8rem; color: var(--text-secondary); margin-top: 2px; }
+        .chip-row { display: flex; gap: 8px; }
+        .chip {
+            background: var(--card); border: 1px solid var(--border);
+            padding: 8px 15px; border-radius: 20px; font-size: 0.78rem;
+            cursor: pointer; transition: var(--transition); font-weight: 500;
+            color: var(--text-secondary);
+        }
+        .chip:hover { background: var(--border); color: var(--text); }
+        .chip.liked { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+        /* ===== CATEGORIES ===== */
+        .cat-section { margin-bottom: 32px; }
+        .cat-header {
+            display: flex; align-items: center; gap: 10px;
+            font-size: 1.05rem; font-weight: 700; margin-bottom: 16px;
+            letter-spacing: -0.3px;
+        }
+        .cat-dot {
+            width: 8px; height: 8px; background: var(--accent);
+            border-radius: 50%; box-shadow: 0 0 10px var(--accent);
+        }
+        .cat-count {
+            font-size: 0.75rem; color: var(--text-secondary);
+            font-weight: 500; background: var(--card); padding: 3px 10px;
+            border-radius: 12px; border: 1px solid var(--border);
+        }
         .channel-row {
-            display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px;
-            scroll-behavior: smooth;
+            display: flex; gap: 16px; overflow-x: auto;
+            padding-bottom: 8px; scroll-behavior: smooth;
         }
         .channel-row::-webkit-scrollbar { height: 4px; }
-        .channel-row::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
+        .channel-row::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
         .ch-card {
-            min-width: 180px; max-width: 200px; background: var(--card);
-            border-radius: 12px; overflow: hidden; cursor: pointer;
-            transition: 0.2s; flex-shrink: 0; border: 2px solid transparent;
-            position: relative;
+            min-width: 200px; max-width: 220px;
+            background: var(--card); border-radius: var(--radius);
+            overflow: hidden; cursor: pointer; transition: var(--transition);
+            flex-shrink: 0; border: 1px solid var(--border);
+            position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.2);
         }
-        .ch-card:hover { transform: translateY(-4px); border-color: var(--accent); }
-        .ch-card.active { border-color: var(--gold); box-shadow: 0 0 15px rgba(255,215,0,0.3); }
-        .ch-card .live-tag {
-            position: absolute; top: 8px; left: 8px;
-            background: var(--accent); color: #fff; padding: 3px 8px;
-            border-radius: 4px; font-size: 0.6rem; font-weight: 700; z-index: 2;
+        .ch-card:hover {
+            transform: translateY(-6px);
+            border-color: var(--accent);
+            box-shadow: 0 16px 40px var(--accent-glow);
+        }
+        .ch-card.active {
+            border-color: var(--gold);
+            box-shadow: 0 0 30px var(--gold-glow);
+        }
+        .ch-card .premium-badge {
+            position: absolute; top: 10px; left: 10px;
+            background: var(--gradient-1); color: #fff;
+            padding: 4px 10px; border-radius: 6px; font-size: 0.6rem;
+            font-weight: 700; z-index: 2; letter-spacing: 1px;
         }
         .ch-thumb {
-            width: 100%; aspect-ratio: 16/10; background: #1a1a2e;
-            display: flex; align-items: center; justify-content: center; overflow: hidden;
+            width: 100%; aspect-ratio: 16/10;
+            background: var(--gradient-2);
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden;
         }
-        .ch-thumb img { width: 100%; height: 100%; object-fit: contain; padding: 10px; }
-        .ch-info { padding: 10px; }
-        .ch-name { font-size: 0.82rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .ch-cat { font-size: 0.7rem; color: #888; margin-top: 2px; }
-
-        /* FOOTER */
-        .footer {
-            text-align: center; padding: 20px; color: #555; font-size: 0.78rem;
-            border-top: 1px solid #222; margin-top: 30px;
+        .ch-thumb img { width: 100%; height: 100%; object-fit: contain; padding: 12px; }
+        .ch-info { padding: 14px; }
+        .ch-name {
+            font-size: 0.85rem; font-weight: 600;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
-        .footer a { color: var(--blue); text-decoration: none; }
+        .ch-cat {
+            font-size: 0.72rem; color: var(--text-secondary);
+            margin-top: 4px; display: flex; align-items: center; gap: 4px;
+        }
+        .ch-cat::before {
+            content: ''; width: 5px; height: 5px; background: #00cc66;
+            border-radius: 50%; box-shadow: 0 0 6px #00cc66;
+        }
 
-        @media (max-width: 600px) {
-            .ch-card { min-width: 150px; }
-            .topbar { padding: 8px 12px; }
+        /* ===== FOOTER ===== */
+        .footer-premium {
+            text-align: center; padding: 24px;
+            color: var(--text-secondary); font-size: 0.8rem;
+            border-top: 1px solid var(--border); margin-top: 40px;
+            background: var(--glass);
+        }
+        .footer-premium a { color: var(--accent); text-decoration: none; font-weight: 600; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .topbar { padding: 10px 14px; }
+            .search-wrapper { max-width: 100%; order: 10; flex: 100%; }
+            .ch-card { min-width: 155px; }
+            .main-content { padding: 16px 10px; }
         }
     </style>
 </head>
 <body>
 
+    <!-- TOP BAR -->
     <header class="topbar">
-        <div class="logo" onclick="location.reload()">🔴 DP<span>BHAI</span> TV</div>
-        <div class="search-box">
-            <input type="text" id="searchInput" placeholder="चैनल खोजें..." oninput="filterChannels()">
-            <span class="search-icon">🔍</span>
-        </div>
-        <div class="top-btns">
-            <button class="btn btn-refresh" onclick="location.reload()">🔄</button>
-            <a href="#" class="btn btn-live">🔴 LIVE</a>
-            <a href="https://t.me/YourChannel" target="_blank" class="btn btn-sponsor">⭐ Sponsor</a>
-        </div>
-    </header>
-
-    <main class="main-content">
-        <div class="video-wrapper">
-            <video id="videoPlayer" controls style="display:none;"></video>
-            <div id="statusOverlay">
-                <div style="font-size:3rem;">📡</div>
-                <div>नीचे से चैनल चुनें</div>
+        <div class="logo-group" onclick="location.reload()">
+            <div class="logo-icon">👑</div>
+            <div class="logo-text">
+                DP<span class="accent">BHAI</span>
+                <span class="premium">VIP</span>
             </div>
         </div>
 
-        <div class="now-playing">
-            <h2 id="videoTitle">🔴 कोई चैनल नहीं चल रहा</h2>
-            <span class="meta" id="videoMeta">5 चैनल उपलब्ध</span>
+        <div class="search-wrapper">
+            <input type="text" id="searchInput" placeholder="चैनल खोजें...">
+            <span class="s-icon">🔍</span>
         </div>
 
+        <div class="action-group">
+            <button class="btn btn-icon btn-ghost" onclick="toggleTheme()" title="थीम बदलें">🌓</button>
+            <button class="btn btn-icon btn-ghost" onclick="location.reload()" title="रिफ्रेश">🔄</button>
+            <a href="#" class="btn btn-accent">🔴 LIVE</a>
+            <a href="https://t.me/YourChannel" target="_blank" class="btn btn-gold">👑 Premium</a>
+        </div>
+    </header>
+
+    <!-- MAIN -->
+    <main class="main-content">
+        <!-- PLAYER -->
+        <div class="player-card">
+            <video id="videoPlayer" controls style="display:none;"></video>
+            <div id="statusOverlay">
+                <span class="s-icon-large">📡</span>
+                <span>चैनल चुनें</span>
+            </div>
+        </div>
+
+        <!-- INFO -->
+        <div class="info-bar">
+            <div>
+                <h2 id="videoTitle">👑 DP BHAI TV में आपका स्वागत है</h2>
+                <p class="meta" id="videoMeta">प्रीमियम हिंदी चैनल</p>
+            </div>
+            <div class="chip-row">
+                <button class="chip" id="likeBtn" onclick="toggleLike()">👍 <span id="likeCount">0</span></button>
+                <button class="chip" onclick="shareSite()">📤 शेयर</button>
+            </div>
+        </div>
+
+        <!-- CATEGORIES -->
         <div id="allCategories"></div>
     </main>
 
-    <footer class="footer">
-        🚀 <b>DP BHAI TV</b> | <a href="https://t.me/YourChannel">@YourChannel</a> | © 2026
+    <!-- FOOTER -->
+    <footer class="footer-premium">
+        👑 <strong>DP BHAI TV VIP</strong> — प्रीमियम IPTV अनुभव |
+        <a href="https://t.me/YourChannel" target="_blank">Join Telegram</a> |
+        © 2026
     </footer>
 
     <script>
+        // ===== CONFIG =====
         const M3U_URL = 'https://raw.githubusercontent.com/thedpbhai/hindi-iptv-dp/main/hindi_working.m3u';
+        const CAT_ICONS = {
+            'Hindi Movies': '🎬', 'Hindi Music': '🎵', 'Sports': '🏆',
+            'News': '📰', 'Kids': '🧒', 'Entertainment': '🎭'
+        };
+
+        // ===== STATE =====
         let channels = [], currentHls = null;
         const video = document.getElementById('videoPlayer');
         const statusOverlay = document.getElementById('statusOverlay');
         const allCategories = document.getElementById('allCategories');
         const videoTitle = document.getElementById('videoTitle');
         const videoMeta = document.getElementById('videoMeta');
+        const searchInput = document.getElementById('searchInput');
 
-        const CAT_ICONS = {
-            'Hindi Movies': '🎬',
-            'Hindi Music': '🎵',
-            'Sports': '🏏',
-            'News': '📰',
-            'Kids': '🧒',
-            'Entertainment': '🎭'
-        };
+        // ===== THEME =====
+        function toggleTheme() {
+            const html = document.documentElement;
+            const current = html.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+        }
+        (function() {
+            const saved = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', saved);
+        })();
 
+        // ===== SEARCH =====
+        searchInput.addEventListener('input', () => {
+            const q = searchInput.value.toLowerCase();
+            const filtered = channels.filter(ch =>
+                ch.name.toLowerCase().includes(q) || ch.group.toLowerCase().includes(q)
+            );
+            renderByCategory(filtered);
+        });
+
+        // ===== LOAD =====
         async function loadPlaylist() {
             try {
                 const res = await fetch(M3U_URL);
                 const text = await res.text();
                 parseM3U(text);
             } catch(e) {
-                allCategories.innerHTML = '<p style="color:red;text-align:center;">❌ लोड नहीं हुआ</p>';
+                allCategories.innerHTML = '<p style="color:var(--accent);text-align:center;padding:40px;">❌ प्लेलिस्ट लोड नहीं हुई</p>';
             }
         }
 
@@ -218,22 +388,21 @@
 
             let html = '';
             for (const [cat, chs] of Object.entries(cats)) {
-                const icon = CAT_ICONS[cat] || '📺';
+                const icon = CAT_ICONS[cat.replace(/[🎬🎵🏆📰🧒🎭]/g,'').trim()] || CAT_ICONS[cat] || '📺';
                 html += `
                 <div class="cat-section">
                     <div class="cat-header">
-                        <span class="cat-icon">${icon}</span> ${cat}
-                        <span class="cat-count">(${chs.length})</span>
+                        <span class="cat-dot"></span> ${cat}
+                        <span class="cat-count">${chs.length} चैनल</span>
                     </div>
                     <div class="channel-row">`;
-                
                 chs.forEach(ch => {
                     const idx = channels.indexOf(ch);
                     html += `
                         <div class="ch-card" onclick="playChannel(${idx})" id="card-${idx}">
-                            <div class="live-tag">LIVE</div>
+                            <div class="premium-badge">VIP</div>
                             <div class="ch-thumb">
-                                ${ch.logo ? `<img src="${ch.logo}" onerror="this.style.display='none';this.parentElement.innerHTML='<span style=font-size:2.5rem>📺</span>'">` : '<span style="font-size:2.5rem;">📺</span>'}
+                                ${ch.logo ? `<img src="${ch.logo}" onerror="this.style.display='none';this.parentElement.innerHTML='<span style=font-size:3rem>🎬</span>'">` : '<span style="font-size:3rem;">🎬</span>'}
                             </div>
                             <div class="ch-info">
                                 <div class="ch-name">${ch.name}</div>
@@ -243,18 +412,11 @@
                 });
                 html += `</div></div>`;
             }
-            allCategories.innerHTML = html;
-            videoMeta.textContent = list.length + ' चैनल उपलब्ध';
+            allCategories.innerHTML = html || '<p style="text-align:center;padding:40px;color:var(--text-secondary);">कोई चैनल नहीं मिला</p>';
+            videoMeta.textContent = list.length + ' प्रीमियम चैनल उपलब्ध';
         }
 
-        function filterChannels() {
-            const q = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = channels.filter(ch => 
-                ch.name.toLowerCase().includes(q) || ch.group.toLowerCase().includes(q)
-            );
-            renderByCategory(filtered);
-        }
-
+        // ===== PLAY =====
         function playChannel(index) {
             document.querySelectorAll('.ch-card').forEach(el => el.classList.remove('active'));
             document.getElementById('card-'+index)?.classList.add('active');
@@ -265,7 +427,7 @@
             statusOverlay.style.display = 'none';
             video.style.display = 'block';
             videoTitle.textContent = '🔴 LIVE: ' + ch.name;
-            videoMeta.textContent = ch.group + ' • DP BHAI TV';
+            videoMeta.textContent = ch.group + ' • DP BHAI TV VIP';
 
             if (currentHls) { currentHls.destroy(); currentHls = null; }
 
@@ -275,13 +437,25 @@
                 currentHls.attachMedia(video);
                 currentHls.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(()=>{}));
                 currentHls.on(Hls.Events.ERROR, () => {
-                    statusOverlay.style.display = 'block';
-                    statusOverlay.innerHTML = '<div style="font-size:2rem;">⚠️</div><div>अनुपलब्ध</div>';
+                    statusOverlay.style.display = 'flex';
+                    statusOverlay.innerHTML = '<span style="font-size:3rem;">⚠️</span><span>चैनल अनुपलब्ध</span>';
                 });
             } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
                 video.src = ch.url;
                 video.play().catch(()=>{});
             }
+        }
+
+        function toggleLike() {
+            const btn = document.getElementById('likeBtn');
+            btn.classList.toggle('liked');
+            const c = parseInt(document.getElementById('likeCount').textContent);
+            document.getElementById('likeCount').textContent = btn.classList.contains('liked') ? c+1 : c-1;
+        }
+
+        function shareSite() {
+            if (navigator.share) navigator.share({ title: 'DP BHAI TV', url: location.href });
+            else prompt('URL:', location.href);
         }
 
         loadPlaylist();
