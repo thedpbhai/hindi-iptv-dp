@@ -3,427 +3,386 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DP BHAI TV - हिंदी लाइव चैनल</title>
+    <title>DP BHAI TV • हिंदी लाइव चैनल</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0f0f0f;
+            --bg: #030303;
+            --surface: #0f0f0f;
             --card: #1a1a1a;
-            --text: #fff;
-            --accent: #ff0000;
-            --gold: #ffd700;
+            --border: #262626;
+            --text: #f1f1f1;
+            --text-secondary: #aaa;
+            --accent: #ff0033;
+            --accent-hover: #ff1a4d;
+            --gold: #ffc107;
+            --blue: #3ea6ff;
+            --radius: 14px;
+            --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .light-mode {
-            --bg: #f5f5f5;
-            --card: #fff;
-            --text: #111;
-            --accent: #cc0000;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; transition: background 0.3s, color 0.3s; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
+            font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
             background: var(--bg);
             color: var(--text);
             min-height: 100vh;
+            -webkit-tap-highlight-color: transparent;
         }
+
+        /* ========== TOP BAR ========== */
         .topbar {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 10px 16px;
-            background: var(--bg);
+            padding: 10px 20px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
             position: sticky;
             top: 0;
             z-index: 100;
-            gap: 8px;
-            border-bottom: 1px solid #222;
-            flex-wrap: wrap;
+            gap: 12px;
+            backdrop-filter: blur(20px);
         }
         .logo {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             font-weight: 800;
-            font-size: 1.1rem;
+            font-size: 1.3rem;
             cursor: pointer;
+            user-select: none;
+            letter-spacing: -0.5px;
         }
-        .logo-icon {
+        .logo-dot {
+            width: 10px; height: 10px;
             background: var(--accent);
-            width: 34px; height: 34px;
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9rem;
-            color: #fff;
+            animation: logoPulse 2s infinite;
+            box-shadow: 0 0 8px var(--accent);
         }
-        .search-box {
+        @keyframes logoPulse {
+            0%,100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.3); }
+        }
+        .logo span { color: var(--accent); }
+
+        .search-wrapper {
             display: flex;
             flex: 1;
-            max-width: 450px;
+            max-width: 480px;
             position: relative;
         }
-        .search-box input {
+        .search-wrapper input {
             width: 100%;
-            padding: 9px 40px 9px 15px;
+            padding: 10px 42px 10px 16px;
             background: var(--card);
-            border: 1px solid #444;
-            border-radius: 25px;
+            border: 1px solid var(--border);
+            border-radius: 30px;
             color: var(--text);
-            font-size: 0.85rem;
+            font-size: 0.88rem;
             outline: none;
+            transition: var(--transition);
         }
-        .search-box input:focus { border-color: #3ea6ff; box-shadow: 0 0 0 3px rgba(62,166,255,0.2); }
-        .search-clear {
+        .search-wrapper input:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 4px rgba(62,166,255,0.15);
+        }
+        .search-wrapper .search-icon {
             position: absolute;
-            right: 10px;
+            right: 14px;
             top: 50%;
             transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: #888;
-            cursor: pointer;
-            font-size: 1rem;
-            display: none;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            pointer-events: none;
         }
         .top-actions {
             display: flex;
             align-items: center;
-            gap: 6px;
-            flex-wrap: wrap;
+            gap: 8px;
+            flex-shrink: 0;
         }
-        .icon-btn {
-            background: var(--card);
-            border: 1px solid #444;
-            color: var(--text);
-            padding: 7px 12px;
-            border-radius: 20px;
+        .btn {
+            padding: 8px 16px;
+            border-radius: 24px;
             font-size: 0.8rem;
+            font-weight: 600;
             cursor: pointer;
-            white-space: nowrap;
+            border: none;
+            transition: var(--transition);
             text-decoration: none;
-            display: flex;
+            display: inline-flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
+            white-space: nowrap;
+            letter-spacing: 0.3px;
         }
-        .icon-btn:hover { background: #333; }
-        .live-badge {
-            background: #ff0000;
-            color: #fff !important;
-            animation: livePulse 2s infinite;
-            border: none;
-            font-weight: 700;
+        .btn-ghost {
+            background: var(--card);
+            color: var(--text);
+            border: 1px solid var(--border);
         }
-        @keyframes livePulse {
-            0%,100% { box-shadow: 0 0 0 0 rgba(255,0,0,0.4); }
-            50% { box-shadow: 0 0 0 12px rgba(255,0,0,0); }
-        }
-        .sponsor-btn {
-            background: var(--gold);
-            color: #000 !important;
-            font-weight: 700;
-            border: none;
-        }
-        .notification {
-            position: fixed;
-            top: 80px;
-            right: 20px;
-            background: #1a3a5c;
+        .btn-ghost:hover { background: #252525; }
+        .btn-accent {
+            background: var(--accent);
             color: #fff;
-            padding: 12px 20px;
-            border-radius: 10px;
-            z-index: 999;
-            display: none;
-            animation: slideIn 0.3s;
-            font-size: 0.9rem;
-            border: 1px solid #3ea6ff;
+            animation: liveGlow 2s infinite;
         }
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+        @keyframes liveGlow {
+            0%,100% { box-shadow: 0 0 0 0 rgba(255,0,51,0.4); }
+            50% { box-shadow: 0 0 0 12px rgba(255,0,51,0); }
         }
-        .main-content {
-            max-width: 1300px;
+        .btn-gold {
+            background: var(--gold);
+            color: #000;
+            font-weight: 700;
+        }
+        .btn-gold:hover { filter: brightness(1.1); }
+
+        /* ========== MAIN LAYOUT ========== */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 20px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 15px;
+            padding: 20px;
+        }
+
+        /* ========== PLAYER ========== */
+        .player-section {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
         }
         .video-wrapper {
-            position: relative;
             background: #000;
-            border-radius: 14px;
+            border-radius: var(--radius);
             overflow: hidden;
             aspect-ratio: 16/9;
-            margin-bottom: 10px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+            position: relative;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+            border: 1px solid var(--border);
         }
         video {
             width: 100%;
             height: 100%;
             object-fit: contain;
+            display: block;
         }
         #statusOverlay {
             position: absolute;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
-            color: #888;
+            color: #555;
         }
-        .player-controls-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0; right: 0;
-            padding: 15px;
-            background: linear-gradient(transparent, rgba(0,0,0,0.8));
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            opacity: 0;
-            transition: 0.3s;
-        }
-        .video-wrapper:hover .player-controls-overlay { opacity: 1; }
-        .vid-info {
+        #statusOverlay .status-icon { font-size: 4rem; margin-bottom: 12px; }
+        #statusOverlay .status-text { font-size: 0.95rem; }
+
+        .video-info-bar {
             display: flex;
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 18px;
+            gap: 12px;
         }
-        .vid-left h2 { font-size: 1.15rem; font-weight: 600; }
-        .vid-left p { font-size: 0.78rem; color: #888; margin-top: 2px; }
-        .vid-actions {
-            display: flex;
-            gap: 8px;
-        }
-        .action-chip {
+        .video-info-bar h2 { font-size: 1.2rem; font-weight: 700; }
+        .video-info-bar .meta { font-size: 0.8rem; color: var(--text-secondary); }
+        .chip-group { display: flex; gap: 8px; }
+        .chip {
             background: var(--card);
-            border: 1px solid #444;
-            color: var(--text);
+            border: 1px solid var(--border);
             padding: 8px 14px;
-            border-radius: 20px;
+            border-radius: 24px;
             font-size: 0.78rem;
             cursor: pointer;
+            transition: var(--transition);
             display: flex;
             align-items: center;
             gap: 5px;
+            color: var(--text-secondary);
         }
-        .action-chip:hover { background: #333; }
-        .action-chip.liked { color: #ff0000; border-color: #ff0000; }
-        .view-count { font-size: 0.75rem; color: #888; }
-        .section-header {
+        .chip:hover { background: #252525; color: #fff; }
+        .chip.active-chip { color: #fff; border-color: var(--blue); background: #1a3050; }
+
+        /* ========== SIDEBAR ========== */
+        .sidebar {
+            background: var(--surface);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 75vh;
+            overflow: hidden;
+        }
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+        .sidebar-header h3 { font-size: 0.9rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); }
+        .sidebar-header .count { font-size: 0.75rem; color: var(--accent); font-weight: 700; }
+        .channel-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            overflow-y: auto;
+            flex: 1;
+            padding-right: 4px;
+        }
+        .channel-list::-webkit-scrollbar { width: 4px; }
+        .channel-list::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+
+        .ch-item {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            margin-bottom: 12px;
-        }
-        .section-header h3 { font-size: 1rem; font-weight: 600; }
-        .channel-strip {
-            display: flex;
             gap: 12px;
-            overflow-x: auto;
-            padding-bottom: 12px;
-            scroll-behavior: smooth;
-            scroll-snap-type: x mandatory;
-        }
-        .channel-strip::-webkit-scrollbar { height: 5px; }
-        .channel-strip::-webkit-scrollbar-thumb { background: #555; border-radius: 5px; }
-        .channel-card {
-            min-width: 165px;
-            max-width: 180px;
-            background: var(--card);
-            border-radius: 14px;
-            overflow: hidden;
+            padding: 10px 12px;
+            border-radius: 10px;
             cursor: pointer;
-            transition: 0.25s;
-            flex-shrink: 0;
-            scroll-snap-align: start;
-            position: relative;
-            border: 2px solid transparent;
+            transition: var(--transition);
+            border: 1px solid transparent;
         }
-        .channel-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.5); }
-        .channel-card.active {
-            border-color: #3ea6ff;
-            box-shadow: 0 0 20px rgba(62,166,255,0.3);
+        .ch-item:hover { background: var(--card); }
+        .ch-item.active-item {
+            background: #1a1a30;
+            border-color: var(--blue);
         }
-        .card-thumb {
-            width: 100%;
-            aspect-ratio: 16/10;
+        .ch-thumb {
+            width: 46px; height: 46px;
+            border-radius: 10px;
             background: #1a1a2e;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2.2rem;
-            position: relative;
             overflow: hidden;
+            flex-shrink: 0;
         }
-        .card-thumb img {
+        .ch-thumb img {
             width: 100%;
             height: 100%;
             object-fit: contain;
-            padding: 10px;
+            padding: 5px;
         }
-        .card-fav {
-            position: absolute;
-            top: 8px; right: 8px;
-            background: rgba(0,0,0,0.6);
-            border: none;
-            color: #fff;
-            width: 28px; height: 28px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 0.8rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 5;
-        }
-        .card-fav.favorited { color: #ffd700; }
-        .card-info { padding: 8px 10px; }
-        .card-name {
-            font-size: 0.8rem;
+        .ch-thumb .placeholder { font-size: 1.5rem; }
+        .ch-info { flex: 1; min-width: 0; }
+        .ch-info .ch-name {
+            font-size: 0.85rem;
             font-weight: 600;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        .card-meta {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+        .ch-info .ch-cat {
             font-size: 0.7rem;
-            color: #888;
-            margin-top: 3px;
+            color: var(--text-secondary);
+            margin-top: 1px;
         }
-        .live-dot {
-            display: inline-block;
-            width: 7px; height: 7px;
-            background: #ff0000;
+        .ch-status {
+            width: 8px; height: 8px;
+            background: #00cc66;
             border-radius: 50%;
-            margin-right: 3px;
-            animation: blink 1s infinite;
+            flex-shrink: 0;
+            box-shadow: 0 0 6px #00cc66;
         }
-        @keyframes blink {
-            0%,100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-        .sponsor-footer {
+
+        /* ========== FOOTER ========== */
+        .footer {
             text-align: center;
-            padding: 18px;
-            color: #888;
-            font-size: 0.82rem;
-            border-top: 1px solid #222;
-            margin-top: 25px;
+            padding: 20px;
+            color: #555;
+            font-size: 0.78rem;
+            border-top: 1px solid var(--border);
+            margin-top: 30px;
         }
-        .sponsor-footer a { color: #3ea6ff; text-decoration: none; font-weight: 600; }
-        @media (max-width: 600px) {
-            .topbar { padding: 8px 10px; }
-            .search-box { order: 5; max-width: 100%; flex: 100%; }
-            .channel-card { min-width: 140px; }
-            .video-wrapper { aspect-ratio: 16/9; border-radius: 0; }
-            .main-content { padding: 0; }
+        .footer a { color: var(--blue); text-decoration: none; font-weight: 600; }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 900px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+                padding: 10px;
+            }
+            .sidebar { max-height: none; }
+            .topbar { padding: 8px 12px; }
+            .search-wrapper { max-width: 100%; }
         }
     </style>
 </head>
 <body>
 
-    <div class="notification" id="notification"></div>
-
-    <div class="topbar">
+    <!-- TOP BAR -->
+    <header class="topbar">
         <div class="logo" onclick="location.reload()">
-            <div class="logo-icon">▶</div>
-            <span>DP BHAI TV</span>
+            <div class="logo-dot"></div>
+            DP<span>BHAI</span> TV
         </div>
-        <div class="search-box">
-            <input type="text" id="searchInput" placeholder="चैनल सर्च करें..." oninput="filterChannels()">
-            <button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button>
+        <div class="search-wrapper">
+            <input type="text" id="searchInput" placeholder="चैनल खोजें..." oninput="filterChannels()">
+            <span class="search-icon">🔍</span>
         </div>
         <div class="top-actions">
-            <button class="icon-btn" onclick="toggleTheme()" title="Theme">🌓</button>
-            <button class="icon-btn" onclick="refreshChannels()" title="Refresh">🔄</button>
-            <a href="#" class="icon-btn live-badge">🔴 LIVE</a>
-            <a href="https://t.me/YourChannel" target="_blank" class="icon-btn sponsor-btn">⭐ Sponsor</a>
+            <button class="btn btn-ghost" onclick="refreshChannels()">🔄</button>
+            <a href="#" class="btn btn-accent">🔴 LIVE</a>
+            <a href="https://t.me/YourChannel" target="_blank" class="btn btn-gold">⭐ Sponsor</a>
         </div>
-    </div>
+    </header>
 
-    <div class="main-content">
-        <div class="video-wrapper">
-            <video id="videoPlayer" controls style="display:none;"></video>
-            <div id="statusOverlay">
-                <div style="font-size:3rem;">📡</div>
-                <div>नीचे से चैनल चुनें</div>
+    <!-- MAIN GRID -->
+    <main class="main-grid">
+        <!-- PLAYER -->
+        <section class="player-section">
+            <div class="video-wrapper">
+                <video id="videoPlayer" controls style="display:none;"></video>
+                <div id="statusOverlay">
+                    <div class="status-icon">📡</div>
+                    <div class="status-text">दाईं ओर से चैनल चुनें</div>
+                </div>
             </div>
-            <div class="player-controls-overlay">
-                <button class="icon-btn" onclick="toggleFullscreen()">⛶</button>
+            <div class="video-info-bar">
+                <div>
+                    <h2 id="videoTitle">कोई चैनल नहीं चल रहा</h2>
+                    <p class="meta" id="videoMeta">5 हिंदी चैनल उपलब्ध</p>
+                </div>
+                <div class="chip-group">
+                    <button class="chip" id="likeBtn" onclick="toggleLike()">👍 <span id="likeCount">0</span></button>
+                    <button class="chip" onclick="shareChannel()">📤 शेयर</button>
+                </div>
             </div>
-        </div>
+        </section>
 
-        <div class="vid-info">
-            <div class="vid-left">
-                <h2 id="videoTitle">🔴 कोई चैनल नहीं चल रहा</h2>
-                <p id="videoMeta">5 हिंदी चैनल उपलब्ध</p>
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h3>📺 चैनल्स</h3>
+                <span class="count" id="channelCount">5</span>
             </div>
-            <div class="vid-actions">
-                <button class="action-chip" id="likeBtn" onclick="toggleLike()">👍 <span id="likeCount">0</span></button>
-                <button class="action-chip" onclick="shareChannel()">📤 शेयर</button>
-                <span class="view-count" id="viewCount">👁️ 0 views</span>
-            </div>
-        </div>
+            <div class="channel-list" id="channelList"></div>
+        </aside>
+    </main>
 
-        <div class="section-header">
-            <h3>📺 आपके लिए</h3>
-            <span style="font-size:0.75rem;color:#888;" id="channelCount">5 चैनल</span>
-        </div>
-        <div class="channel-strip" id="channelStrip"></div>
-    </div>
-
-    <div class="sponsor-footer">
+    <!-- FOOTER -->
+    <footer class="footer">
         🚀 <strong>Sponsored by:</strong> <a href="https://t.me/YourChannel" target="_blank">@YourChannel</a> | 
         <a href="https://www.paypal.com/your-link" target="_blank">❤️ Support Us</a> |
         © 2026 DP BHAI TV
-    </div>
+    </footer>
 
     <script>
         const M3U_URL = 'https://raw.githubusercontent.com/thedpbhai/hindi-iptv-dp/main/hindi_working.m3u';
-        let channels = [], currentHls = null, favorites = JSON.parse(localStorage.getItem('favs')||'[]');
-        let currentChannel = null, viewCounts = JSON.parse(localStorage.getItem('views')||'{}');
+        let channels = [], currentHls = null;
         const video = document.getElementById('videoPlayer');
         const statusOverlay = document.getElementById('statusOverlay');
-        const channelStrip = document.getElementById('channelStrip');
+        const channelList = document.getElementById('channelList');
         const videoTitle = document.getElementById('videoTitle');
         const videoMeta = document.getElementById('videoMeta');
-        const notification = document.getElementById('notification');
-        const searchClear = document.getElementById('searchClear');
         const channelCount = document.getElementById('channelCount');
-
-        function notify(msg) {
-            notification.textContent = msg;
-            notification.style.display = 'block';
-            setTimeout(() => notification.style.display = 'none', 2500);
-        }
-
-        function toggleTheme() {
-            document.body.classList.toggle('light-mode');
-            localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
-        }
-        if (localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
-
-        function toggleFullscreen() {
-            const wrapper = document.querySelector('.video-wrapper');
-            if (document.fullscreenElement) { document.exitFullscreen(); }
-            else { wrapper.requestFullscreen().catch(()=>{}); }
-        }
-
-        function refreshChannels() {
-            channelStrip.innerHTML = '<p style="padding:20px;">🔄 रिफ्रेश हो रहा है...</p>';
-            loadPlaylist();
-            notify('✅ चैनल रिफ्रेश हो गए!');
-        }
-
-        function clearSearch() {
-            document.getElementById('searchInput').value = '';
-            renderChannels(channels);
-            searchClear.style.display = 'none';
-        }
 
         async function loadPlaylist() {
             try {
@@ -431,7 +390,7 @@
                 const text = await res.text();
                 parseM3U(text);
             } catch(e) {
-                channelStrip.innerHTML = '<p style="color:red;padding:20px;">❌ प्लेलिस्ट लोड नहीं हुई</p>';
+                channelList.innerHTML = '<p style="color:#ff4444;text-align:center;padding:20px;">❌ लोड नहीं हुआ</p>';
             }
         }
 
@@ -455,74 +414,46 @@
         }
 
         function renderChannels(list) {
+            channelCount.textContent = list.length;
             if (list.length === 0) {
-                channelStrip.innerHTML = '<p style="color:#888;padding:20px;">कोई चैनल नहीं मिला</p>';
-                channelCount.textContent = '0 चैनल';
+                channelList.innerHTML = '<p style="color:#888;text-align:center;padding:20px;">कोई चैनल नहीं</p>';
                 return;
             }
-            channelCount.textContent = list.length + ' चैनल';
             let html = '';
             list.forEach((ch, i) => {
                 const idx = channels.indexOf(ch);
-                const isFav = favorites.includes(ch.name);
-                const views = viewCounts[ch.name] || 0;
                 html += `
-                <div class="channel-card" onclick="playChannel(${idx})" id="card-${idx}">
-                    <div class="card-thumb">
-                        ${ch.logo ? `<img src="${ch.logo}" onerror="this.style.display='none';this.parentElement.innerHTML='<span style=font-size:2.2rem>📺</span>'">` : '<span style="font-size:2.2rem;">📺</span>'}
-                        <button class="card-fav ${isFav?'favorited':''}" onclick="event.stopPropagation();toggleFavorite('${ch.name.replace(/'/g,"\\'")}', this)">${isFav?'⭐':'☆'}</button>
+                <div class="ch-item" onclick="playChannel(${idx})" id="ch-${idx}">
+                    <div class="ch-thumb">
+                        ${ch.logo ? `<img src="${ch.logo}" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=placeholder>📺</span>'">` : '<span class="placeholder">📺</span>'}
                     </div>
-                    <div class="card-info">
-                        <div class="card-name"><span class="live-dot"></span>${ch.name}</div>
-                        <div class="card-meta">
-                            <span>${ch.group}</span>
-                            <span>👁️ ${views}</span>
-                        </div>
+                    <div class="ch-info">
+                        <div class="ch-name">${ch.name}</div>
+                        <div class="ch-cat">${ch.group}</div>
                     </div>
+                    <div class="ch-status"></div>
                 </div>`;
             });
-            channelStrip.innerHTML = html;
+            channelList.innerHTML = html;
         }
 
         function filterChannels() {
             const q = document.getElementById('searchInput').value.toLowerCase();
-            searchClear.style.display = q ? 'block' : 'none';
             const filtered = channels.filter(ch => ch.name.toLowerCase().includes(q));
             renderChannels(filtered);
         }
 
-        function toggleFavorite(name, btn) {
-            if (favorites.includes(name)) {
-                favorites = favorites.filter(f => f !== name);
-                btn.classList.remove('favorited');
-                btn.textContent = '☆';
-                notify('💔 पसंदीदा से हटाया');
-            } else {
-                favorites.push(name);
-                btn.classList.add('favorited');
-                btn.textContent = '⭐';
-                notify('⭐ पसंदीदा में जोड़ा!');
-            }
-            localStorage.setItem('favs', JSON.stringify(favorites));
-        }
-
         function playChannel(index) {
-            document.querySelectorAll('.channel-card').forEach(el => el.classList.remove('active'));
-            document.getElementById('card-'+index)?.classList.add('active');
-            document.getElementById('likeBtn').classList.remove('liked');
+            document.querySelectorAll('.ch-item').forEach(el => el.classList.remove('active-item'));
+            document.getElementById('ch-'+index)?.classList.add('active-item');
 
             const ch = channels[index];
             if (!ch?.url) return;
-            currentChannel = ch;
-
-            viewCounts[ch.name] = (viewCounts[ch.name] || 0) + 1;
-            localStorage.setItem('views', JSON.stringify(viewCounts));
-            document.getElementById('viewCount').textContent = '👁️ ' + viewCounts[ch.name] + ' views';
 
             statusOverlay.style.display = 'none';
             video.style.display = 'block';
-            videoTitle.textContent = '🔴 LIVE: ' + ch.name;
-            videoMeta.textContent = ch.group + ' • DP BHAI TV • अभी लाइव';
+            videoTitle.textContent = '🔴 ' + ch.name;
+            videoMeta.textContent = ch.group + ' • DP BHAI TV';
 
             if (currentHls) { currentHls.destroy(); currentHls = null; }
 
@@ -530,14 +461,10 @@
                 currentHls = new Hls();
                 currentHls.loadSource(ch.url);
                 currentHls.attachMedia(video);
-                currentHls.on(Hls.Events.MANIFEST_PARSED, () => {
-                    video.play().catch(()=>{});
-                    notify('✅ चल रहा है: ' + ch.name);
-                });
+                currentHls.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(()=>{}));
                 currentHls.on(Hls.Events.ERROR, () => {
-                    statusOverlay.style.display = 'flex';
-                    statusOverlay.innerHTML = '<div style="font-size:2rem;">⚠️</div><div>यह चैनल अभी उपलब्ध नहीं</div>';
-                    notify('❌ ' + ch.name + ' नहीं चल सका');
+                    statusOverlay.style.display = 'block';
+                    statusOverlay.innerHTML = '<div class="status-icon">⚠️</div><div class="status-text">अनुपलब्ध</div>';
                 });
             } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
                 video.src = ch.url;
@@ -545,21 +472,16 @@
             }
         }
 
+        function refreshChannels() { loadPlaylist(); }
         function toggleLike() {
             const btn = document.getElementById('likeBtn');
-            btn.classList.toggle('liked');
-            const count = parseInt(document.getElementById('likeCount').textContent);
-            document.getElementById('likeCount').textContent = btn.classList.contains('liked') ? count + 1 : count - 1;
+            btn.classList.toggle('active-chip');
+            const c = parseInt(document.getElementById('likeCount').textContent);
+            document.getElementById('likeCount').textContent = btn.classList.contains('active-chip') ? c+1 : c-1;
         }
-
         function shareChannel() {
-            if (!currentChannel) { notify('पहले कोई चैनल चलाएं!'); return; }
-            const url = 'https://thedpbhai.github.io/hindi-iptv-dp/';
-            if (navigator.share) {
-                navigator.share({ title: currentChannel.name, text: 'DP BHAI TV पर देखें: ' + currentChannel.name, url });
-            } else {
-                prompt('ये लिंक कॉपी करें:', url);
-            }
+            if (navigator.share) navigator.share({ url: 'https://thedpbhai.github.io/hindi-iptv-dp/' });
+            else prompt('URL:', 'https://thedpbhai.github.io/hindi-iptv-dp/');
         }
 
         loadPlaylist();
