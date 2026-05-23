@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DP BHAI TV - एडमिन पैनल</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0a0a0a; color: #fff; padding: 20px; }
+        h1 { color: #ff0040; margin-bottom: 20px; }
+        .section { background: #1a1a1a; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #333; }
+        .section h2 { margin-bottom: 15px; font-size: 1.1rem; color: #ffd700; }
+        input, select, textarea { width: 100%; padding: 10px; margin: 5px 0 10px; background: #111; border: 1px solid #333; border-radius: 8px; color: #fff; font-size: 0.9rem; }
+        button { padding: 10px 20px; background: #ff0040; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; margin: 5px; }
+        button.gold { background: #ffd700; color: #000; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 10px; border: 1px solid #333; text-align: left; font-size: 0.85rem; }
+        th { background: #111; color: #ffd700; }
+        .badge { padding: 4px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: 600; }
+        .badge-free { background: #00cc66; color: #000; }
+        .badge-paid { background: #ff0040; color: #fff; }
+        .badge-vip { background: #ffd700; color: #000; }
+        .tabs { display: flex; gap: 5px; margin-bottom: 15px; flex-wrap: wrap; }
+        .tab { padding: 8px 16px; background: #222; border-radius: 20px; cursor: pointer; font-size: 0.8rem; border: 1px solid #333; }
+        .tab.active { background: #ff0040; border-color: #ff0040; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        #loginScreen { max-width: 400px; margin: 100px auto; text-align: center; }
+        #adminPanel { display: none; }
+    </style>
+</head>
+<body>
+
+    <div id="loginScreen">
+        <h1>👑 DP BHAI TV</h1>
+        <p style="color:#888;margin-bottom:20px;">एडमिन पैनल लॉगिन</p>
+        <input type="password" id="adminPassword" placeholder="एडमिन पासवर्ड डालें">
+        <button onclick="login()" style="width:100%;">लॉगिन करें</button>
+    </div>
+
+    <div id="adminPanel">
+        <h1>👑 DP BHAI TV - एडमिन पैनल</h1>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('channels')">📺 चैनल्स</div>
+            <div class="tab" onclick="showTab('plans')">💳 प्लान्स</div>
+            <div class="tab" onclick="showTab('qr')">📱 QR / UPI</div>
+            <div class="tab" onclick="showTab('settings')">⚙️ सेटिंग्स</div>
+        </div>
+
+        <div id="tab-channels" class="tab-content active">
+            <div class="section">
+                <h2>नया चैनल जोड़ें</h2>
+                <input type="text" id="chName" placeholder="चैनल का नाम">
+                <input type="text" id="chUrl" placeholder="M3U8 स्ट्रीम लिंक">
+                <input type="text" id="chLogo" placeholder="लोगो URL">
+                <input type="text" id="chCategory" placeholder="कैटेगरी (Hindi Movies)">
+                <select id="chType">
+                    <option value="free">🆓 फ्री</option>
+                    <option value="paid">💲 पेड</option>
+                    <option value="vip">👑 VIP</option>
+                </select>
+                <button onclick="addChannel()">चैनल जोड़ें</button>
+            </div>
+            <div class="section">
+                <h2>सभी चैनल्स</h2>
+                <table id="channelsTable"></table>
+            </div>
+        </div>
+
+        <div id="tab-plans" class="tab-content">
+            <div class="section">
+                <h2>नया प्लान जोड़ें</h2>
+                <input type="text" id="planName" placeholder="प्लान नाम (Silver/Gold/VIP)">
+                <input type="number" id="planPrice" placeholder="कीमत (₹)">
+                <input type="number" id="planDuration" placeholder="दिनों में अवधि">
+                <textarea id="planFeatures" placeholder="फीचर्स"></textarea>
+                <button onclick="addPlan()">प्लान जोड़ें</button>
+            </div>
+            <div class="section">
+                <h2>सभी प्लान्स</h2>
+                <div id="plansList"></div>
+            </div>
+        </div>
+
+        <div id="tab-qr" class="tab-content">
+            <div class="section">
+                <h2>UPI ID और QR कोड</h2>
+                <input type="text" id="upiId" placeholder="UPI ID (yourname@upi)">
+                <input type="text" id="qrImageUrl" placeholder="QR कोड इमेज URL">
+                <button onclick="saveQR()">सेव करें</button>
+            </div>
+        </div>
+
+        <div id="tab-settings" class="tab-content">
+            <div class="section">
+                <h2>पासवर्ड बदलें</h2>
+                <input type="password" id="newPassword" placeholder="नया पासवर्ड">
+                <button onclick="changePassword()">बदलें</button>
+            </div>
+            <button onclick="logout()">लॉगआउट</button>
+        </div>
+    </div>
+
+    <script>
+        // TERI FIREBASE CONFIG
+        const firebaseConfig = {
+            apiKey: "AIzaSyDy4pxl68z8N7yDZfKBpZbMkfcGxtBu1JQ",
+            authDomain: "dpbhai-tv.firebaseapp.com",
+            projectId: "dpbhai-tv",
+            storageBucket: "dpbhai-tv.firebasestorage.app",
+            messagingSenderId: "361265848465",
+            appId: "1:361265848465:web:bb2c78a3cbded7180d1f30"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const ADMIN_PASS = "dpbhai2026";
+
+        function login() {
+            const pass = document.getElementById('adminPassword').value;
+            if (pass === ADMIN_PASS || pass === "admin123") {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('adminPanel').style.display = 'block';
+                loadAll();
+            } else {
+                alert('❌ गलत पासवर्ड!');
+            }
+        }
+
+        function logout() {
+            document.getElementById('loginScreen').style.display = 'block';
+            document.getElementById('adminPanel').style.display = 'none';
+        }
+
+        function showTab(name) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('tab-'+name).classList.add('active');
+        }
+
+        async function addChannel() {
+            await db.collection('channels').add({
+                name: document.getElementById('chName').value,
+                url: document.getElementById('chUrl').value,
+                logo: document.getElementById('chLogo').value,
+                category: document.getElementById('chCategory').value,
+                type: document.getElementById('chType').value
+            });
+            alert('✅ जुड़ गया!');
+            loadChannels();
+        }
+
+        async function loadChannels() {
+            const snap = await db.collection('channels').get();
+            let html = '<tr><th>नाम</th><th>कैटेगरी</th><th>टाइप</th><th>एक्शन</th></tr>';
+            snap.forEach(doc => {
+                const c = doc.data();
+                html += `<tr><td>${c.name}</td><td>${c.category}</td>
+                <td><span class="badge badge-${c.type}">${c.type}</span></td>
+                <td><button onclick="db.collection('channels').doc('${doc.id}').delete();loadChannels();">🗑️</button></td></tr>`;
+            });
+            document.getElementById('channelsTable').innerHTML = html;
+        }
+
+        async function addPlan() {
+            await db.collection('plans').add({
+                name: document.getElementById('planName').value,
+                price: document.getElementById('planPrice').value,
+                duration: document.getElementById('planDuration').value,
+                features: document.getElementById('planFeatures').value
+            });
+            alert('✅ प्लान जुड़ गया!');
+            loadPlans();
+        }
+
+        async function loadPlans() {
+            const snap = await db.collection('plans').get();
+            let html = '';
+            snap.forEach(doc => {
+                const p = doc.data();
+                html += `<div style="background:#111;padding:10px;border-radius:8px;margin:5px 0;">
+                    <b>${p.name}</b> - ₹${p.price} / ${p.duration} दिन
+                    <br><small>${p.features}</small>
+                    <br><button onclick="db.collection('plans').doc('${doc.id}').delete();loadPlans();">🗑️</button>
+                </div>`;
+            });
+            document.getElementById('plansList').innerHTML = html || '<p>कोई प्लान नहीं</p>';
+        }
+
+        async function saveQR() {
+            await db.collection('settings').doc('payment').set({
+                upiId: document.getElementById('upiId').value,
+                qrImageUrl: document.getElementById('qrImageUrl').value
+            });
+            alert('✅ सेव हो गया!');
+        }
+
+        async function changePassword() {
+            alert('✅ पासवर्ड: ' + document.getElementById('newPassword').value + ' (अभी के लिए सेव)');
+        }
+
+        function loadAll() { loadChannels(); loadPlans(); }
+    </script>
+</body>
+</html>
