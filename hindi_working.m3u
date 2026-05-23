@@ -1,16 +1,16 @@
 #EXTM3U
 
-#EXTINF:-1 tvg-logo="https://thedpbhai.github.io/hindi-iptv-dp/b4u.png" group-title="Hindi Movies",B4U Kadak
+#EXTINF:-1 tvg-logo="https://thedpbhai.github.io/hindi-iptv-dp/b4u.png" group-title="🎬 Hindi Movies",B4U Kadak
 https://cdn-2.pishow.tv/live/227/master.m3u8
 
-#EXTINF:-1 tvg-logo="https://thedpbhai.github.io/hindi-iptv-dp/b4u.png" group-title="Hindi Movies",Goldmines
+#EXTINF:-1 tvg-logo="https://thedpbhai.github.io/hindi-iptv-dp/b4u.png" group-title="🎬 Hindi Movies",Goldmines
 https://cdn-2.pishow.tv/live/1459/master.m3u8
 
-#EXTINF:-1 tvg-logo="https://thedpbhai.github.io/hindi-iptv-dp/b4u.png" group-title="Hindi Movies",Goldmines Movies
+#EXTINF:-1 tvg-logo="https://thedpbhai.github.io/hindi-iptv-dp/b4u.png" group-title="🎬 Hindi Movies",Goldmines Movies
 https://cdn-2.pishow.tv/live/1461/master.m3u8
 
-#EXTINF:-1 tvg-logo="https://thedpbhai.github.io/hindi-iptv-dp/b4u.png" group-title="Hindi Movies",Goldmines Movies 2
+#EXTINF:-1 tvg-logo="https://thedpbhai.github.io/hindi-iptv-dp/b4u.png" group-title="🎬 Hindi Movies",Goldmines Movies 2
 https://cdn-2.pishow.tv/live/1460/master.m3u8
 
-#EXTINF:-1 tvg-logo="https://thedpbhai.github.io/hindi-iptv-dp/b4u.png" group-title="Hindi Movies",The Movie Club
+#EXTINF:-1 tvg-logo="https://thedpbhai.github.io/hindi-iptv-dp/b4u.png" group-title="🎬 Hindi Movies",The Movie Club
 https://cc-r5hupcym5oehh.akamaized.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-r5hupcym5oehh/SBUM/RunnTV/BollyFlix_IN/BollyFlix_IN.m3u8
