@@ -2,7 +2,7 @@
 <html lang="hi" data-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>DP BHAI TV 👑 प्रीमियम IPTV</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -18,7 +18,6 @@
             --accent-glow: rgba(255,0,64,0.3);
             --gold: #ffd700;
             --gold-glow: rgba(255,215,0,0.2);
-            --blue: #0095ff;
             --gradient-1: linear-gradient(135deg, #ff0040, #ff6b00);
             --gradient-2: linear-gradient(135deg, #1a1a2e, #0f0f23);
             --glass: rgba(255,255,255,0.03);
@@ -26,6 +25,7 @@
             --shadow: 0 20px 60px rgba(0,0,0,0.5);
             --radius: 16px;
             --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
         }
 
         [data-theme="light"] {
@@ -52,95 +52,99 @@
             background: var(--bg);
             color: var(--text);
             min-height: 100vh;
+            min-height: -webkit-fill-available;
             transition: background var(--transition), color var(--transition);
             -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            padding-bottom: var(--safe-bottom);
         }
 
-        /* ===== SCROLLBAR ===== */
-        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar { width: 3px; height: 3px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
 
         /* ===== TOP BAR ===== */
         .topbar {
             display: flex; align-items: center; justify-content: space-between;
-            padding: 14px 24px;
+            padding: 10px 16px;
             background: var(--glass);
             backdrop-filter: blur(30px);
             -webkit-backdrop-filter: blur(30px);
             border-bottom: 1px solid var(--glass-border);
-            position: sticky; top: 0; z-index: 1000; gap: 16px;
-            transition: all var(--transition);
+            position: sticky; top: 0; z-index: 1000; gap: 10px;
+            transition: all var(--transition); flex-wrap: wrap;
         }
         .logo-group {
-            display: flex; align-items: center; gap: 12px; cursor: pointer;
+            display: flex; align-items: center; gap: 8px; cursor: pointer;
         }
         .logo-icon {
-            width: 40px; height: 40px;
+            width: 34px; height: 34px;
             background: var(--gradient-1);
-            border-radius: 12px;
+            border-radius: 10px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 1.2rem; font-weight: 900; color: #fff;
-            box-shadow: 0 8px 25px var(--accent-glow);
+            font-size: 1rem; font-weight: 900; color: #fff;
+            box-shadow: 0 6px 20px var(--accent-glow);
         }
         .logo-text {
-            font-size: 1.4rem; font-weight: 800; letter-spacing: -0.5px;
+            font-size: 1.2rem; font-weight: 800; letter-spacing: -0.5px;
         }
         .logo-text .accent { color: var(--accent); }
-        .logo-text .premium {
-            font-size: 0.5rem; background: var(--gradient-1); color: #fff;
-            padding: 2px 6px; border-radius: 4px; vertical-align: super;
+        .premium {
+            font-size: 0.45rem; background: var(--gradient-1); color: #fff;
+            padding: 2px 5px; border-radius: 3px; vertical-align: super;
             margin-left: 2px; letter-spacing: 1px;
         }
 
         .search-wrapper {
-            flex: 1; max-width: 420px; position: relative;
+            flex: 1; min-width: 140px; max-width: 100%; position: relative;
         }
         .search-wrapper input {
-            width: 100%; padding: 11px 45px 11px 18px;
+            width: 100%; padding: 9px 38px 9px 14px;
             background: var(--card); border: 1px solid var(--border);
-            border-radius: 30px; color: var(--text); font-size: 0.88rem;
+            border-radius: 25px; color: var(--text); font-size: 0.82rem;
             outline: none; transition: var(--transition); font-family: 'Inter', sans-serif;
         }
         .search-wrapper input:focus {
-            border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-glow);
+            border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow);
         }
         .search-wrapper .s-icon {
-            position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
-            font-size: 1rem; opacity: 0.5;
+            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+            font-size: 0.9rem; opacity: 0.5;
         }
 
-        .action-group { display: flex; gap: 8px; align-items: center; }
+        .action-group { display: flex; gap: 5px; align-items: center; }
         .btn {
-            padding: 9px 18px; border-radius: 25px; font-size: 0.8rem; font-weight: 600;
+            padding: 7px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 600;
             cursor: pointer; text-decoration: none; border: none; transition: var(--transition);
             font-family: 'Inter', sans-serif; white-space: nowrap;
-            display: flex; align-items: center; gap: 6px;
+            display: flex; align-items: center; gap: 4px;
         }
-        .btn-icon { width: 36px; height: 36px; padding: 0; justify-content: center; border-radius: 50%; font-size: 1rem; }
+        .btn-icon { width: 30px; height: 30px; padding: 0; justify-content: center; border-radius: 50%; font-size: 0.85rem; }
         .btn-ghost { background: var(--card); color: var(--text); border: 1px solid var(--border); }
         .btn-ghost:hover { background: var(--border); }
         .btn-accent {
             background: var(--gradient-1); color: #fff;
-            box-shadow: 0 8px 25px var(--accent-glow); animation: accentPulse 3s infinite;
+            box-shadow: 0 6px 20px var(--accent-glow); animation: accentPulse 3s infinite;
         }
         @keyframes accentPulse {
-            0%,100% { box-shadow: 0 8px 25px var(--accent-glow); }
-            50% { box-shadow: 0 12px 35px rgba(255,0,64,0.5); }
+            0%,100% { box-shadow: 0 6px 20px var(--accent-glow); }
+            50% { box-shadow: 0 10px 30px rgba(255,0,64,0.5); }
         }
         .btn-gold {
             background: var(--gold); color: #000; font-weight: 700;
-            box-shadow: 0 8px 25px var(--gold-glow);
+            box-shadow: 0 6px 20px var(--gold-glow);
         }
-        .btn-gold:hover { filter: brightness(1.15); transform: translateY(-1px); }
 
-        /* ===== MAIN ===== */
-        .main-content { max-width: 1500px; margin: 0 auto; padding: 24px 20px; }
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            width: 100%; max-width: 100%; margin: 0 auto;
+            padding: 12px 12px 20px;
+        }
 
-        /* ===== PLAYER ===== */
+        /* ===== VIDEO PLAYER ===== */
         .player-card {
-            background: #000; border-radius: var(--radius); overflow: hidden;
-            aspect-ratio: 16/9; position: relative; margin-bottom: 16px;
+            background: #000; border-radius: 12px; overflow: hidden;
+            width: 100%; aspect-ratio: 16/9; position: relative; margin-bottom: 12px;
             border: 1px solid var(--border); box-shadow: var(--shadow);
         }
         video { width: 100%; height: 100%; object-fit: contain; display: block; }
@@ -148,69 +152,64 @@
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             text-align: center; opacity: 0.5;
         }
-        #statusOverlay .s-icon-large { font-size: 5rem; display: block; margin-bottom: 12px; }
+        #statusOverlay .s-icon-large { font-size: 3rem; display: block; margin-bottom: 8px; }
 
         .info-bar {
             display: flex; align-items: center; justify-content: space-between;
-            padding: 16px 0; border-bottom: 1px solid var(--border);
-            margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
+            padding: 10px 0; border-bottom: 1px solid var(--border);
+            margin-bottom: 18px; flex-wrap: wrap; gap: 8px;
         }
-        .info-bar h2 { font-size: 1.2rem; font-weight: 700; letter-spacing: -0.3px; }
-        .info-bar .meta { font-size: 0.8rem; color: var(--text-secondary); margin-top: 2px; }
-        .chip-row { display: flex; gap: 8px; }
+        .info-bar h2 { font-size: 1rem; font-weight: 700; letter-spacing: -0.3px; }
+        .info-bar .meta { font-size: 0.7rem; color: var(--text-secondary); margin-top: 2px; }
+        .chip-row { display: flex; gap: 6px; }
         .chip {
             background: var(--card); border: 1px solid var(--border);
-            padding: 8px 15px; border-radius: 20px; font-size: 0.78rem;
+            padding: 6px 12px; border-radius: 16px; font-size: 0.7rem;
             cursor: pointer; transition: var(--transition); font-weight: 500;
             color: var(--text-secondary);
         }
-        .chip:hover { background: var(--border); color: var(--text); }
         .chip.liked { background: var(--accent); color: #fff; border-color: var(--accent); }
 
         /* ===== CATEGORIES ===== */
-        .cat-section { margin-bottom: 32px; }
+        .cat-section { margin-bottom: 24px; }
         .cat-header {
-            display: flex; align-items: center; gap: 10px;
-            font-size: 1.05rem; font-weight: 700; margin-bottom: 16px;
-            letter-spacing: -0.3px;
+            display: flex; align-items: center; gap: 8px;
+            font-size: 0.9rem; font-weight: 700; margin-bottom: 12px;
         }
         .cat-dot {
-            width: 8px; height: 8px; background: var(--accent);
-            border-radius: 50%; box-shadow: 0 0 10px var(--accent);
+            width: 6px; height: 6px; background: var(--accent);
+            border-radius: 50%; box-shadow: 0 0 8px var(--accent);
         }
         .cat-count {
-            font-size: 0.75rem; color: var(--text-secondary);
-            font-weight: 500; background: var(--card); padding: 3px 10px;
-            border-radius: 12px; border: 1px solid var(--border);
+            font-size: 0.65rem; color: var(--text-secondary);
+            font-weight: 500; background: var(--card); padding: 2px 8px;
+            border-radius: 10px; border: 1px solid var(--border);
         }
         .channel-row {
-            display: flex; gap: 16px; overflow-x: auto;
-            padding-bottom: 8px; scroll-behavior: smooth;
+            display: flex; gap: 10px; overflow-x: auto;
+            padding-bottom: 6px; scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
         }
-        .channel-row::-webkit-scrollbar { height: 4px; }
-        .channel-row::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        .channel-row::-webkit-scrollbar { height: 3px; }
+        .channel-row::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
         .ch-card {
-            min-width: 200px; max-width: 220px;
-            background: var(--card); border-radius: var(--radius);
+            min-width: 150px; max-width: 170px;
+            background: var(--card); border-radius: 12px;
             overflow: hidden; cursor: pointer; transition: var(--transition);
             flex-shrink: 0; border: 1px solid var(--border);
-            position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            position: relative; box-shadow: 0 3px 15px rgba(0,0,0,0.2);
         }
-        .ch-card:hover {
-            transform: translateY(-6px);
-            border-color: var(--accent);
-            box-shadow: 0 16px 40px var(--accent-glow);
-        }
+        .ch-card:active { transform: scale(0.96); }
         .ch-card.active {
             border-color: var(--gold);
-            box-shadow: 0 0 30px var(--gold-glow);
+            box-shadow: 0 0 20px var(--gold-glow);
         }
-        .ch-card .premium-badge {
-            position: absolute; top: 10px; left: 10px;
+        .premium-badge {
+            position: absolute; top: 6px; left: 6px;
             background: var(--gradient-1); color: #fff;
-            padding: 4px 10px; border-radius: 6px; font-size: 0.6rem;
-            font-weight: 700; z-index: 2; letter-spacing: 1px;
+            padding: 2px 7px; border-radius: 4px; font-size: 0.5rem;
+            font-weight: 700; z-index: 2; letter-spacing: 0.5px;
         }
         .ch-thumb {
             width: 100%; aspect-ratio: 16/10;
@@ -218,42 +217,33 @@
             display: flex; align-items: center; justify-content: center;
             overflow: hidden;
         }
-        .ch-thumb img { width: 100%; height: 100%; object-fit: contain; padding: 12px; }
-        .ch-info { padding: 14px; }
+        .ch-thumb img { width: 100%; height: 100%; object-fit: contain; padding: 8px; }
+        .ch-info { padding: 10px; }
         .ch-name {
-            font-size: 0.85rem; font-weight: 600;
+            font-size: 0.75rem; font-weight: 600;
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
         .ch-cat {
-            font-size: 0.72rem; color: var(--text-secondary);
-            margin-top: 4px; display: flex; align-items: center; gap: 4px;
+            font-size: 0.65rem; color: var(--text-secondary);
+            margin-top: 2px; display: flex; align-items: center; gap: 3px;
         }
         .ch-cat::before {
-            content: ''; width: 5px; height: 5px; background: #00cc66;
-            border-radius: 50%; box-shadow: 0 0 6px #00cc66;
+            content: ''; width: 4px; height: 4px; background: #00cc66;
+            border-radius: 50%; box-shadow: 0 0 4px #00cc66;
         }
 
         /* ===== FOOTER ===== */
         .footer-premium {
-            text-align: center; padding: 24px;
-            color: var(--text-secondary); font-size: 0.8rem;
-            border-top: 1px solid var(--border); margin-top: 40px;
+            text-align: center; padding: 16px;
+            color: var(--text-secondary); font-size: 0.7rem;
+            border-top: 1px solid var(--border); margin-top: 30px;
             background: var(--glass);
         }
         .footer-premium a { color: var(--accent); text-decoration: none; font-weight: 600; }
-
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 768px) {
-            .topbar { padding: 10px 14px; }
-            .search-wrapper { max-width: 100%; order: 10; flex: 100%; }
-            .ch-card { min-width: 155px; }
-            .main-content { padding: 16px 10px; }
-        }
     </style>
 </head>
 <body>
 
-    <!-- TOP BAR -->
     <header class="topbar">
         <div class="logo-group" onclick="location.reload()">
             <div class="logo-icon">👑</div>
@@ -269,56 +259,47 @@
         </div>
 
         <div class="action-group">
-            <button class="btn btn-icon btn-ghost" onclick="toggleTheme()" title="थीम बदलें">🌓</button>
-            <button class="btn btn-icon btn-ghost" onclick="location.reload()" title="रिफ्रेश">🔄</button>
-            <a href="#" class="btn btn-accent">🔴 LIVE</a>
-            <a href="https://t.me/YourChannel" target="_blank" class="btn btn-gold">👑 Premium</a>
+            <button class="btn btn-icon btn-ghost" onclick="toggleTheme()">🌓</button>
+            <button class="btn btn-icon btn-ghost" onclick="location.reload()">🔄</button>
+            <a href="#" class="btn btn-accent">LIVE</a>
+            <a href="https://t.me/YourChannel" class="btn btn-gold">👑 VIP</a>
         </div>
     </header>
 
-    <!-- MAIN -->
     <main class="main-content">
-        <!-- PLAYER -->
         <div class="player-card">
-            <video id="videoPlayer" controls style="display:none;"></video>
+            <video id="videoPlayer" controls style="display:none;" playsinline webkit-playsinline></video>
             <div id="statusOverlay">
                 <span class="s-icon-large">📡</span>
                 <span>चैनल चुनें</span>
             </div>
         </div>
 
-        <!-- INFO -->
         <div class="info-bar">
             <div>
-                <h2 id="videoTitle">👑 DP BHAI TV में आपका स्वागत है</h2>
-                <p class="meta" id="videoMeta">प्रीमियम हिंदी चैनल</p>
+                <h2 id="videoTitle">👑 DP BHAI TV VIP</h2>
+                <p class="meta" id="videoMeta">प्रीमियम चैनल</p>
             </div>
             <div class="chip-row">
                 <button class="chip" id="likeBtn" onclick="toggleLike()">👍 <span id="likeCount">0</span></button>
-                <button class="chip" onclick="shareSite()">📤 शेयर</button>
+                <button class="chip" onclick="shareSite()">📤</button>
             </div>
         </div>
 
-        <!-- CATEGORIES -->
         <div id="allCategories"></div>
     </main>
 
-    <!-- FOOTER -->
     <footer class="footer-premium">
-        👑 <strong>DP BHAI TV VIP</strong> — प्रीमियम IPTV अनुभव |
-        <a href="https://t.me/YourChannel" target="_blank">Join Telegram</a> |
-        © 2026
+        👑 <strong>DP BHAI TV VIP</strong> | <a href="https://t.me/YourChannel">Telegram</a> | © 2026
     </footer>
 
     <script>
-        // ===== CONFIG =====
         const M3U_URL = 'https://raw.githubusercontent.com/thedpbhai/hindi-iptv-dp/main/hindi_working.m3u';
         const CAT_ICONS = {
             'Hindi Movies': '🎬', 'Hindi Music': '🎵', 'Sports': '🏆',
             'News': '📰', 'Kids': '🧒', 'Entertainment': '🎭'
         };
 
-        // ===== STATE =====
         let channels = [], currentHls = null;
         const video = document.getElementById('videoPlayer');
         const statusOverlay = document.getElementById('statusOverlay');
@@ -327,7 +308,6 @@
         const videoMeta = document.getElementById('videoMeta');
         const searchInput = document.getElementById('searchInput');
 
-        // ===== THEME =====
         function toggleTheme() {
             const html = document.documentElement;
             const current = html.getAttribute('data-theme');
@@ -340,7 +320,6 @@
             document.documentElement.setAttribute('data-theme', saved);
         })();
 
-        // ===== SEARCH =====
         searchInput.addEventListener('input', () => {
             const q = searchInput.value.toLowerCase();
             const filtered = channels.filter(ch =>
@@ -349,14 +328,13 @@
             renderByCategory(filtered);
         });
 
-        // ===== LOAD =====
         async function loadPlaylist() {
             try {
                 const res = await fetch(M3U_URL);
                 const text = await res.text();
                 parseM3U(text);
             } catch(e) {
-                allCategories.innerHTML = '<p style="color:var(--accent);text-align:center;padding:40px;">❌ प्लेलिस्ट लोड नहीं हुई</p>';
+                allCategories.innerHTML = '<p style="color:var(--accent);text-align:center;padding:30px;">❌ लोड नहीं हुआ</p>';
             }
         }
 
@@ -388,12 +366,11 @@
 
             let html = '';
             for (const [cat, chs] of Object.entries(cats)) {
-                const icon = CAT_ICONS[cat.replace(/[🎬🎵🏆📰🧒🎭]/g,'').trim()] || CAT_ICONS[cat] || '📺';
                 html += `
                 <div class="cat-section">
                     <div class="cat-header">
                         <span class="cat-dot"></span> ${cat}
-                        <span class="cat-count">${chs.length} चैनल</span>
+                        <span class="cat-count">${chs.length}</span>
                     </div>
                     <div class="channel-row">`;
                 chs.forEach(ch => {
@@ -402,7 +379,7 @@
                         <div class="ch-card" onclick="playChannel(${idx})" id="card-${idx}">
                             <div class="premium-badge">VIP</div>
                             <div class="ch-thumb">
-                                ${ch.logo ? `<img src="${ch.logo}" onerror="this.style.display='none';this.parentElement.innerHTML='<span style=font-size:3rem>🎬</span>'">` : '<span style="font-size:3rem;">🎬</span>'}
+                                ${ch.logo ? `<img src="${ch.logo}" onerror="this.style.display='none';this.parentElement.innerHTML='<span style=font-size:2.5rem>🎬</span>'">` : '<span style="font-size:2.5rem;">🎬</span>'}
                             </div>
                             <div class="ch-info">
                                 <div class="ch-name">${ch.name}</div>
@@ -412,11 +389,10 @@
                 });
                 html += `</div></div>`;
             }
-            allCategories.innerHTML = html || '<p style="text-align:center;padding:40px;color:var(--text-secondary);">कोई चैनल नहीं मिला</p>';
-            videoMeta.textContent = list.length + ' प्रीमियम चैनल उपलब्ध';
+            allCategories.innerHTML = html || '<p style="text-align:center;padding:30px;">कोई चैनल नहीं</p>';
+            videoMeta.textContent = list.length + ' प्रीमियम चैनल';
         }
 
-        // ===== PLAY =====
         function playChannel(index) {
             document.querySelectorAll('.ch-card').forEach(el => el.classList.remove('active'));
             document.getElementById('card-'+index)?.classList.add('active');
@@ -426,8 +402,8 @@
 
             statusOverlay.style.display = 'none';
             video.style.display = 'block';
-            videoTitle.textContent = '🔴 LIVE: ' + ch.name;
-            videoMeta.textContent = ch.group + ' • DP BHAI TV VIP';
+            videoTitle.textContent = '🔴 ' + ch.name;
+            videoMeta.textContent = ch.group + ' • VIP';
 
             if (currentHls) { currentHls.destroy(); currentHls = null; }
 
@@ -438,7 +414,7 @@
                 currentHls.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(()=>{}));
                 currentHls.on(Hls.Events.ERROR, () => {
                     statusOverlay.style.display = 'flex';
-                    statusOverlay.innerHTML = '<span style="font-size:3rem;">⚠️</span><span>चैनल अनुपलब्ध</span>';
+                    statusOverlay.innerHTML = '<span>⚠️ अनुपलब्ध</span>';
                 });
             } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
                 video.src = ch.url;
