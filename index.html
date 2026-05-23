@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DP BHAI TV • हिंदी लाइव चैनल</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #030303;
@@ -15,363 +14,152 @@
             --text: #f1f1f1;
             --text-secondary: #aaa;
             --accent: #ff0033;
-            --accent-hover: #ff1a4d;
             --gold: #ffc107;
             --blue: #3ea6ff;
             --radius: 14px;
-            --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
             background: var(--bg);
             color: var(--text);
             min-height: 100vh;
-            -webkit-tap-highlight-color: transparent;
         }
 
-        /* ========== TOP BAR ========== */
+        /* TOP BAR */
         .topbar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 20px;
-            background: var(--surface);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 10px 20px; background: var(--surface);
             border-bottom: 1px solid var(--border);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            gap: 12px;
-            backdrop-filter: blur(20px);
+            position: sticky; top: 0; z-index: 100; gap: 12px; flex-wrap: wrap;
         }
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 800;
-            font-size: 1.3rem;
-            cursor: pointer;
-            user-select: none;
-            letter-spacing: -0.5px;
+        .logo { font-size: 1.3rem; font-weight: 800; color: var(--accent); cursor: pointer; white-space: nowrap; }
+        .logo span { color: #fff; }
+        .search-box {
+            display: flex; flex: 1; max-width: 400px; position: relative;
         }
-        .logo-dot {
-            width: 10px; height: 10px;
-            background: var(--accent);
-            border-radius: 50%;
-            animation: logoPulse 2s infinite;
-            box-shadow: 0 0 8px var(--accent);
+        .search-box input {
+            width: 100%; padding: 9px 40px 9px 15px;
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 25px; color: var(--text); font-size: 0.85rem; outline: none;
         }
-        @keyframes logoPulse {
-            0%,100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.6; transform: scale(1.3); }
-        }
-        .logo span { color: var(--accent); }
-
-        .search-wrapper {
-            display: flex;
-            flex: 1;
-            max-width: 480px;
-            position: relative;
-        }
-        .search-wrapper input {
-            width: 100%;
-            padding: 10px 42px 10px 16px;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 30px;
-            color: var(--text);
-            font-size: 0.88rem;
-            outline: none;
-            transition: var(--transition);
-        }
-        .search-wrapper input:focus {
-            border-color: var(--blue);
-            box-shadow: 0 0 0 4px rgba(62,166,255,0.15);
-        }
-        .search-wrapper .search-icon {
-            position: absolute;
-            right: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-            pointer-events: none;
-        }
-        .top-actions {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-shrink: 0;
-        }
+        .search-box input:focus { border-color: var(--blue); }
+        .search-icon { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #888; }
+        .top-btns { display: flex; gap: 8px; }
         .btn {
-            padding: 8px 16px;
-            border-radius: 24px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            transition: var(--transition);
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            white-space: nowrap;
-            letter-spacing: 0.3px;
+            padding: 8px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;
+            cursor: pointer; text-decoration: none; border: none; white-space: nowrap;
         }
-        .btn-ghost {
-            background: var(--card);
-            color: var(--text);
-            border: 1px solid var(--border);
-        }
-        .btn-ghost:hover { background: #252525; }
-        .btn-accent {
-            background: var(--accent);
-            color: #fff;
-            animation: liveGlow 2s infinite;
-        }
-        @keyframes liveGlow {
-            0%,100% { box-shadow: 0 0 0 0 rgba(255,0,51,0.4); }
-            50% { box-shadow: 0 0 0 12px rgba(255,0,51,0); }
-        }
-        .btn-gold {
-            background: var(--gold);
-            color: #000;
-            font-weight: 700;
-        }
-        .btn-gold:hover { filter: brightness(1.1); }
+        .btn-live { background: var(--accent); color: #fff; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,0,51,.4)} 50%{box-shadow:0 0 0 10px rgba(255,0,51,0)} }
+        .btn-sponsor { background: var(--gold); color: #000; }
+        .btn-refresh { background: var(--card); color: #fff; border: 1px solid var(--border); }
 
-        /* ========== MAIN LAYOUT ========== */
-        .main-grid {
-            display: grid;
-            grid-template-columns: 1fr 340px;
-            gap: 20px;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-        }
+        /* MAIN */
+        .main-content { max-width: 1400px; margin: 0 auto; padding: 15px; }
 
-        /* ========== PLAYER ========== */
-        .player-section {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
+        /* PLAYER */
         .video-wrapper {
-            background: #000;
-            border-radius: var(--radius);
-            overflow: hidden;
-            aspect-ratio: 16/9;
-            position: relative;
-            box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+            background: #000; border-radius: var(--radius); overflow: hidden;
+            aspect-ratio: 16/9; margin-bottom: 12px; position: relative;
             border: 1px solid var(--border);
         }
-        video {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            display: block;
-        }
+        video { width: 100%; height: 100%; object-fit: contain; display: block; }
         #statusOverlay {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            color: #555;
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            text-align: center; color: #555;
         }
-        #statusOverlay .status-icon { font-size: 4rem; margin-bottom: 12px; }
-        #statusOverlay .status-text { font-size: 0.95rem; }
+        .now-playing {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 10px 0; border-bottom: 1px solid #222; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;
+        }
+        .now-playing h2 { font-size: 1.1rem; font-weight: 700; }
+        .now-playing .meta { font-size: 0.78rem; color: #888; }
 
-        .video-info-bar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 12px;
+        /* CATEGORY SECTIONS */
+        .cat-section { margin-bottom: 25px; }
+        .cat-header {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 1rem; font-weight: 700; margin-bottom: 12px;
         }
-        .video-info-bar h2 { font-size: 1.2rem; font-weight: 700; }
-        .video-info-bar .meta { font-size: 0.8rem; color: var(--text-secondary); }
-        .chip-group { display: flex; gap: 8px; }
-        .chip {
-            background: var(--card);
-            border: 1px solid var(--border);
-            padding: 8px 14px;
-            border-radius: 24px;
-            font-size: 0.78rem;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            color: var(--text-secondary);
+        .cat-icon { font-size: 1.3rem; }
+        .cat-count { font-size: 0.75rem; color: #888; font-weight: 400; }
+        .channel-row {
+            display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px;
+            scroll-behavior: smooth;
         }
-        .chip:hover { background: #252525; color: #fff; }
-        .chip.active-chip { color: #fff; border-color: var(--blue); background: #1a3050; }
+        .channel-row::-webkit-scrollbar { height: 4px; }
+        .channel-row::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
 
-        /* ========== SIDEBAR ========== */
-        .sidebar {
-            background: var(--surface);
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            max-height: 75vh;
-            overflow: hidden;
+        .ch-card {
+            min-width: 180px; max-width: 200px; background: var(--card);
+            border-radius: 12px; overflow: hidden; cursor: pointer;
+            transition: 0.2s; flex-shrink: 0; border: 2px solid transparent;
+            position: relative;
         }
-        .sidebar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 8px;
-            border-bottom: 1px solid var(--border);
-        }
-        .sidebar-header h3 { font-size: 0.9rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); }
-        .sidebar-header .count { font-size: 0.75rem; color: var(--accent); font-weight: 700; }
-        .channel-list {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            overflow-y: auto;
-            flex: 1;
-            padding-right: 4px;
-        }
-        .channel-list::-webkit-scrollbar { width: 4px; }
-        .channel-list::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
-
-        .ch-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px 12px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: var(--transition);
-            border: 1px solid transparent;
-        }
-        .ch-item:hover { background: var(--card); }
-        .ch-item.active-item {
-            background: #1a1a30;
-            border-color: var(--blue);
+        .ch-card:hover { transform: translateY(-4px); border-color: var(--accent); }
+        .ch-card.active { border-color: var(--gold); box-shadow: 0 0 15px rgba(255,215,0,0.3); }
+        .ch-card .live-tag {
+            position: absolute; top: 8px; left: 8px;
+            background: var(--accent); color: #fff; padding: 3px 8px;
+            border-radius: 4px; font-size: 0.6rem; font-weight: 700; z-index: 2;
         }
         .ch-thumb {
-            width: 46px; height: 46px;
-            border-radius: 10px;
-            background: #1a1a2e;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            flex-shrink: 0;
+            width: 100%; aspect-ratio: 16/10; background: #1a1a2e;
+            display: flex; align-items: center; justify-content: center; overflow: hidden;
         }
-        .ch-thumb img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            padding: 5px;
-        }
-        .ch-thumb .placeholder { font-size: 1.5rem; }
-        .ch-info { flex: 1; min-width: 0; }
-        .ch-info .ch-name {
-            font-size: 0.85rem;
-            font-weight: 600;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .ch-info .ch-cat {
-            font-size: 0.7rem;
-            color: var(--text-secondary);
-            margin-top: 1px;
-        }
-        .ch-status {
-            width: 8px; height: 8px;
-            background: #00cc66;
-            border-radius: 50%;
-            flex-shrink: 0;
-            box-shadow: 0 0 6px #00cc66;
-        }
+        .ch-thumb img { width: 100%; height: 100%; object-fit: contain; padding: 10px; }
+        .ch-info { padding: 10px; }
+        .ch-name { font-size: 0.82rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .ch-cat { font-size: 0.7rem; color: #888; margin-top: 2px; }
 
-        /* ========== FOOTER ========== */
+        /* FOOTER */
         .footer {
-            text-align: center;
-            padding: 20px;
-            color: #555;
-            font-size: 0.78rem;
-            border-top: 1px solid var(--border);
-            margin-top: 30px;
+            text-align: center; padding: 20px; color: #555; font-size: 0.78rem;
+            border-top: 1px solid #222; margin-top: 30px;
         }
-        .footer a { color: var(--blue); text-decoration: none; font-weight: 600; }
+        .footer a { color: var(--blue); text-decoration: none; }
 
-        /* ========== RESPONSIVE ========== */
-        @media (max-width: 900px) {
-            .main-grid {
-                grid-template-columns: 1fr;
-                padding: 10px;
-            }
-            .sidebar { max-height: none; }
+        @media (max-width: 600px) {
+            .ch-card { min-width: 150px; }
             .topbar { padding: 8px 12px; }
-            .search-wrapper { max-width: 100%; }
         }
     </style>
 </head>
 <body>
 
-    <!-- TOP BAR -->
     <header class="topbar">
-        <div class="logo" onclick="location.reload()">
-            <div class="logo-dot"></div>
-            DP<span>BHAI</span> TV
-        </div>
-        <div class="search-wrapper">
+        <div class="logo" onclick="location.reload()">🔴 DP<span>BHAI</span> TV</div>
+        <div class="search-box">
             <input type="text" id="searchInput" placeholder="चैनल खोजें..." oninput="filterChannels()">
             <span class="search-icon">🔍</span>
         </div>
-        <div class="top-actions">
-            <button class="btn btn-ghost" onclick="refreshChannels()">🔄</button>
-            <a href="#" class="btn btn-accent">🔴 LIVE</a>
-            <a href="https://t.me/YourChannel" target="_blank" class="btn btn-gold">⭐ Sponsor</a>
+        <div class="top-btns">
+            <button class="btn btn-refresh" onclick="location.reload()">🔄</button>
+            <a href="#" class="btn btn-live">🔴 LIVE</a>
+            <a href="https://t.me/YourChannel" target="_blank" class="btn btn-sponsor">⭐ Sponsor</a>
         </div>
     </header>
 
-    <!-- MAIN GRID -->
-    <main class="main-grid">
-        <!-- PLAYER -->
-        <section class="player-section">
-            <div class="video-wrapper">
-                <video id="videoPlayer" controls style="display:none;"></video>
-                <div id="statusOverlay">
-                    <div class="status-icon">📡</div>
-                    <div class="status-text">दाईं ओर से चैनल चुनें</div>
-                </div>
+    <main class="main-content">
+        <div class="video-wrapper">
+            <video id="videoPlayer" controls style="display:none;"></video>
+            <div id="statusOverlay">
+                <div style="font-size:3rem;">📡</div>
+                <div>नीचे से चैनल चुनें</div>
             </div>
-            <div class="video-info-bar">
-                <div>
-                    <h2 id="videoTitle">कोई चैनल नहीं चल रहा</h2>
-                    <p class="meta" id="videoMeta">5 हिंदी चैनल उपलब्ध</p>
-                </div>
-                <div class="chip-group">
-                    <button class="chip" id="likeBtn" onclick="toggleLike()">👍 <span id="likeCount">0</span></button>
-                    <button class="chip" onclick="shareChannel()">📤 शेयर</button>
-                </div>
-            </div>
-        </section>
+        </div>
 
-        <!-- SIDEBAR -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <h3>📺 चैनल्स</h3>
-                <span class="count" id="channelCount">5</span>
-            </div>
-            <div class="channel-list" id="channelList"></div>
-        </aside>
+        <div class="now-playing">
+            <h2 id="videoTitle">🔴 कोई चैनल नहीं चल रहा</h2>
+            <span class="meta" id="videoMeta">5 चैनल उपलब्ध</span>
+        </div>
+
+        <div id="allCategories"></div>
     </main>
 
-    <!-- FOOTER -->
     <footer class="footer">
-        🚀 <strong>Sponsored by:</strong> <a href="https://t.me/YourChannel" target="_blank">@YourChannel</a> | 
-        <a href="https://www.paypal.com/your-link" target="_blank">❤️ Support Us</a> |
-        © 2026 DP BHAI TV
+        🚀 <b>DP BHAI TV</b> | <a href="https://t.me/YourChannel">@YourChannel</a> | © 2026
     </footer>
 
     <script>
@@ -379,10 +167,18 @@
         let channels = [], currentHls = null;
         const video = document.getElementById('videoPlayer');
         const statusOverlay = document.getElementById('statusOverlay');
-        const channelList = document.getElementById('channelList');
+        const allCategories = document.getElementById('allCategories');
         const videoTitle = document.getElementById('videoTitle');
         const videoMeta = document.getElementById('videoMeta');
-        const channelCount = document.getElementById('channelCount');
+
+        const CAT_ICONS = {
+            'Hindi Movies': '🎬',
+            'Hindi Music': '🎵',
+            'Sports': '🏏',
+            'News': '📰',
+            'Kids': '🧒',
+            'Entertainment': '🎭'
+        };
 
         async function loadPlaylist() {
             try {
@@ -390,7 +186,7 @@
                 const text = await res.text();
                 parseM3U(text);
             } catch(e) {
-                channelList.innerHTML = '<p style="color:#ff4444;text-align:center;padding:20px;">❌ लोड नहीं हुआ</p>';
+                allCategories.innerHTML = '<p style="color:red;text-align:center;">❌ लोड नहीं हुआ</p>';
             }
         }
 
@@ -410,49 +206,65 @@
                     current = null;
                 }
             });
-            renderChannels(channels);
+            renderByCategory(channels);
         }
 
-        function renderChannels(list) {
-            channelCount.textContent = list.length;
-            if (list.length === 0) {
-                channelList.innerHTML = '<p style="color:#888;text-align:center;padding:20px;">कोई चैनल नहीं</p>';
-                return;
-            }
-            let html = '';
-            list.forEach((ch, i) => {
-                const idx = channels.indexOf(ch);
-                html += `
-                <div class="ch-item" onclick="playChannel(${idx})" id="ch-${idx}">
-                    <div class="ch-thumb">
-                        ${ch.logo ? `<img src="${ch.logo}" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=placeholder>📺</span>'">` : '<span class="placeholder">📺</span>'}
-                    </div>
-                    <div class="ch-info">
-                        <div class="ch-name">${ch.name}</div>
-                        <div class="ch-cat">${ch.group}</div>
-                    </div>
-                    <div class="ch-status"></div>
-                </div>`;
+        function renderByCategory(list) {
+            const cats = {};
+            list.forEach(ch => {
+                if (!cats[ch.group]) cats[ch.group] = [];
+                cats[ch.group].push(ch);
             });
-            channelList.innerHTML = html;
+
+            let html = '';
+            for (const [cat, chs] of Object.entries(cats)) {
+                const icon = CAT_ICONS[cat] || '📺';
+                html += `
+                <div class="cat-section">
+                    <div class="cat-header">
+                        <span class="cat-icon">${icon}</span> ${cat}
+                        <span class="cat-count">(${chs.length})</span>
+                    </div>
+                    <div class="channel-row">`;
+                
+                chs.forEach(ch => {
+                    const idx = channels.indexOf(ch);
+                    html += `
+                        <div class="ch-card" onclick="playChannel(${idx})" id="card-${idx}">
+                            <div class="live-tag">LIVE</div>
+                            <div class="ch-thumb">
+                                ${ch.logo ? `<img src="${ch.logo}" onerror="this.style.display='none';this.parentElement.innerHTML='<span style=font-size:2.5rem>📺</span>'">` : '<span style="font-size:2.5rem;">📺</span>'}
+                            </div>
+                            <div class="ch-info">
+                                <div class="ch-name">${ch.name}</div>
+                                <div class="ch-cat">${ch.group}</div>
+                            </div>
+                        </div>`;
+                });
+                html += `</div></div>`;
+            }
+            allCategories.innerHTML = html;
+            videoMeta.textContent = list.length + ' चैनल उपलब्ध';
         }
 
         function filterChannels() {
             const q = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = channels.filter(ch => ch.name.toLowerCase().includes(q));
-            renderChannels(filtered);
+            const filtered = channels.filter(ch => 
+                ch.name.toLowerCase().includes(q) || ch.group.toLowerCase().includes(q)
+            );
+            renderByCategory(filtered);
         }
 
         function playChannel(index) {
-            document.querySelectorAll('.ch-item').forEach(el => el.classList.remove('active-item'));
-            document.getElementById('ch-'+index)?.classList.add('active-item');
+            document.querySelectorAll('.ch-card').forEach(el => el.classList.remove('active'));
+            document.getElementById('card-'+index)?.classList.add('active');
 
             const ch = channels[index];
             if (!ch?.url) return;
 
             statusOverlay.style.display = 'none';
             video.style.display = 'block';
-            videoTitle.textContent = '🔴 ' + ch.name;
+            videoTitle.textContent = '🔴 LIVE: ' + ch.name;
             videoMeta.textContent = ch.group + ' • DP BHAI TV';
 
             if (currentHls) { currentHls.destroy(); currentHls = null; }
@@ -464,24 +276,12 @@
                 currentHls.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(()=>{}));
                 currentHls.on(Hls.Events.ERROR, () => {
                     statusOverlay.style.display = 'block';
-                    statusOverlay.innerHTML = '<div class="status-icon">⚠️</div><div class="status-text">अनुपलब्ध</div>';
+                    statusOverlay.innerHTML = '<div style="font-size:2rem;">⚠️</div><div>अनुपलब्ध</div>';
                 });
             } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
                 video.src = ch.url;
                 video.play().catch(()=>{});
             }
-        }
-
-        function refreshChannels() { loadPlaylist(); }
-        function toggleLike() {
-            const btn = document.getElementById('likeBtn');
-            btn.classList.toggle('active-chip');
-            const c = parseInt(document.getElementById('likeCount').textContent);
-            document.getElementById('likeCount').textContent = btn.classList.contains('active-chip') ? c+1 : c-1;
-        }
-        function shareChannel() {
-            if (navigator.share) navigator.share({ url: 'https://thedpbhai.github.io/hindi-iptv-dp/' });
-            else prompt('URL:', 'https://thedpbhai.github.io/hindi-iptv-dp/');
         }
 
         loadPlaylist();
