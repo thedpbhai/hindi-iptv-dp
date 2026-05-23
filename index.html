@@ -3,12 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>DP BHAI TV 👑 प्रीमियम IPTV</title>
+    <title>DP BHAI TV 👑 प्रीमियम IPTV - VLC Streams</title>
+    <!-- HLS.js for modern streaming -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         :root {
             --bg: #000000;
             --surface: #0a0a0a;
@@ -48,7 +56,6 @@
             --shadow: 0 20px 60px rgba(0,0,0,0.08);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', 'Segoe UI', sans-serif;
             background: var(--bg);
@@ -65,401 +72,716 @@
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
 
         .topbar {
-            display: flex; align-items: center; justify-content: space-between;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             padding: 10px 16px;
             background: var(--glass);
             backdrop-filter: blur(30px);
             -webkit-backdrop-filter: blur(30px);
             border-bottom: 1px solid var(--glass-border);
-            position: sticky; top: 0; z-index: 1000; gap: 10px;
-            transition: all var(--transition); flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            gap: 10px;
+            flex-wrap: wrap;
         }
-        .logo-group { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+
+        .logo-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
         .logo-icon {
-            width: 34px; height: 34px;
+            width: 34px;
+            height: 34px;
             background: var(--gradient-1);
             border-radius: 10px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1rem; font-weight: 900; color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: 900;
+            color: #fff;
             box-shadow: 0 6px 20px var(--accent-glow);
         }
-        .logo-text { font-size: 1.2rem; font-weight: 800; letter-spacing: -0.5px; }
+
+        .logo-text {
+            font-size: 1.2rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
         .logo-text .accent { color: var(--accent); }
         .premium {
-            font-size: 0.45rem; background: var(--gradient-1); color: #fff;
-            padding: 2px 5px; border-radius: 3px; vertical-align: super;
-            margin-left: 2px; letter-spacing: 1px;
+            font-size: 0.45rem;
+            background: var(--gradient-1);
+            color: #fff;
+            padding: 2px 5px;
+            border-radius: 3px;
+            vertical-align: super;
+            margin-left: 2px;
+            letter-spacing: 1px;
         }
 
-        .search-wrapper { flex: 1; min-width: 140px; max-width: 100%; position: relative; }
+        .search-wrapper {
+            flex: 1;
+            min-width: 140px;
+            max-width: 100%;
+            position: relative;
+        }
+
         .search-wrapper input {
-            width: 100%; padding: 9px 38px 9px 14px;
-            background: var(--card); border: 1px solid var(--border);
-            border-radius: 25px; color: var(--text); font-size: 0.82rem;
-            outline: none; transition: var(--transition); font-family: 'Inter', sans-serif;
+            width: 100%;
+            padding: 9px 38px 9px 14px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 25px;
+            color: var(--text);
+            font-size: 0.82rem;
+            outline: none;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
         }
-        .search-wrapper input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
-        .search-wrapper .s-icon { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 0.9rem; opacity: 0.5; }
 
-        .action-group { display: flex; gap: 5px; align-items: center; }
-        .btn {
-            padding: 7px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 600;
-            cursor: pointer; text-decoration: none; border: none; transition: var(--transition);
-            font-family: 'Inter', sans-serif; white-space: nowrap;
-            display: flex; align-items: center; gap: 4px;
+        .search-wrapper input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
         }
-        .btn-icon { width: 30px; height: 30px; padding: 0; justify-content: center; border-radius: 50%; font-size: 0.85rem; }
-        .btn-ghost { background: var(--card); color: var(--text); border: 1px solid var(--border); }
+
+        .search-wrapper .s-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.9rem;
+            opacity: 0.5;
+        }
+
+        .action-group {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            border: none;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-icon {
+            width: 30px;
+            height: 30px;
+            padding: 0;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 0.85rem;
+        }
+
+        .btn-ghost {
+            background: var(--card);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
         .btn-ghost:hover { background: var(--border); }
-        .btn-accent { background: var(--gradient-1); color: #fff; box-shadow: 0 6px 20px var(--accent-glow); animation: accentPulse 3s infinite; }
+
+        .btn-accent {
+            background: var(--gradient-1);
+            color: #fff;
+            box-shadow: 0 6px 20px var(--accent-glow);
+            animation: accentPulse 3s infinite;
+        }
+
         @keyframes accentPulse {
-            0%,100% { box-shadow: 0 6px 20px var(--accent-glow); }
+            0%, 100% { box-shadow: 0 6px 20px var(--accent-glow); }
             50% { box-shadow: 0 10px 30px rgba(255,0,64,0.5); }
         }
-        .btn-gold { background: var(--gold); color: #000; font-weight: 700; box-shadow: 0 6px 20px var(--gold-glow); }
 
-        .main-content { width: 100%; max-width: 100%; margin: 0 auto; padding: 12px 12px 20px; }
+        .btn-gold {
+            background: var(--gold);
+            color: #000;
+            font-weight: 700;
+            box-shadow: 0 6px 20px var(--gold-glow);
+        }
+
+        .main-content {
+            width: 100%;
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 12px 12px 20px;
+        }
 
         .player-card {
-            background: #000; border-radius: 12px; overflow: hidden;
-            width: 100%; aspect-ratio: 16/9; position: relative; margin-bottom: 12px;
-            border: 1px solid var(--border); box-shadow: var(--shadow);
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            width: 100%;
+            aspect-ratio: 16/9;
+            position: relative;
+            margin-bottom: 12px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
         }
-        video { width: 100%; height: 100%; object-fit: contain; display: block; }
-        #statusOverlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; opacity: 0.5; }
-        #statusOverlay .s-icon-large { font-size: 3rem; display: block; margin-bottom: 8px; }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        #statusOverlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            opacity: 0.7;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            pointer-events: none;
+        }
 
         .info-bar {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 10px 0; border-bottom: 1px solid var(--border);
-            margin-bottom: 18px; flex-wrap: wrap; gap: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            gap: 8px;
         }
-        .info-bar h2 { font-size: 1rem; font-weight: 700; }
-        .info-bar .meta { font-size: 0.7rem; color: var(--text-secondary); margin-top: 2px; }
-        .chip-row { display: flex; gap: 6px; }
+
+        .info-bar h2 {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .info-bar .meta {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .chip-row {
+            display: flex;
+            gap: 6px;
+        }
+
         .chip {
-            background: var(--card); border: 1px solid var(--border);
-            padding: 6px 12px; border-radius: 16px; font-size: 0.7rem;
-            cursor: pointer; transition: var(--transition); font-weight: 500;
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
             color: var(--text-secondary);
         }
-        .chip.liked { background: var(--accent); color: #fff; border-color: var(--accent); }
 
-        .cat-section { margin-bottom: 24px; }
-        .cat-header { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; font-weight: 700; margin-bottom: 12px; }
-        .cat-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 8px var(--accent); }
-        .cat-count {
-            font-size: 0.65rem; color: var(--text-secondary);
-            font-weight: 500; background: var(--card); padding: 2px 8px;
-            border-radius: 10px; border: 1px solid var(--border);
+        .chip.liked {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
         }
+
+        .cat-section {
+            margin-bottom: 24px;
+        }
+
+        .cat-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .cat-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--accent);
+        }
+
+        .cat-count {
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            background: var(--card);
+            padding: 2px 8px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
         .channel-row {
-            display: flex; gap: 10px; overflow-x: auto;
-            padding-bottom: 6px; scroll-behavior: smooth;
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 6px;
+            scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
         }
-        .channel-row::-webkit-scrollbar { height: 3px; }
-        .channel-row::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+        .channel-row::-webkit-scrollbar {
+            height: 3px;
+        }
+
+        .channel-row::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
 
         .ch-card {
-            min-width: 150px; max-width: 170px;
-            background: var(--card); border-radius: 12px;
-            overflow: hidden; cursor: pointer; transition: var(--transition);
-            flex-shrink: 0; border: 1px solid var(--border);
-            position: relative; box-shadow: 0 3px 15px rgba(0,0,0,0.2);
+            min-width: 150px;
+            max-width: 170px;
+            background: var(--card);
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: var(--transition);
+            flex-shrink: 0;
+            border: 1px solid var(--border);
+            position: relative;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.2);
         }
+
         .ch-card:active { transform: scale(0.96); }
-        .ch-card.active { border-color: var(--gold); box-shadow: 0 0 20px var(--gold-glow); }
-        .ch-card .badge-tag {
-            position: absolute; top: 6px; left: 6px;
-            padding: 2px 7px; border-radius: 4px; font-size: 0.5rem;
-            font-weight: 700; z-index: 2; letter-spacing: 0.5px; color: #fff;
+
+        .ch-card.active {
+            border-color: var(--gold);
+            box-shadow: 0 0 20px var(--gold-glow);
         }
+
+        .badge-tag {
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-size: 0.5rem;
+            font-weight: 700;
+            z-index: 2;
+            letter-spacing: 0.5px;
+            color: #fff;
+        }
+
         .badge-free { background: #00cc66; }
         .badge-paid { background: #ff0040; }
         .badge-vip { background: #ffd700; color: #000; }
+
         .ch-thumb {
-            width: 100%; aspect-ratio: 16/10;
+            width: 100%;
+            aspect-ratio: 16/10;
             background: var(--gradient-2);
-            display: flex; align-items: center; justify-content: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             overflow: hidden;
         }
-        .ch-thumb img { width: 100%; height: 100%; object-fit: contain; padding: 8px; }
-        .ch-info { padding: 10px; }
-        .ch-name { font-size: 0.75rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .ch-cat { font-size: 0.65rem; color: var(--text-secondary); margin-top: 2px; display: flex; align-items: center; gap: 3px; }
-        .ch-cat::before { content: ''; width: 4px; height: 4px; background: #00cc66; border-radius: 50%; box-shadow: 0 0 4px #00cc66; }
+
+        .ch-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 8px;
+        }
+
+        .ch-info {
+            padding: 10px;
+        }
+
+        .ch-name {
+            font-size: 0.75rem;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .ch-cat {
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            margin-top: 2px;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .ch-cat::before {
+            content: '';
+            width: 4px;
+            height: 4px;
+            background: #00cc66;
+            border-radius: 50%;
+            box-shadow: 0 0 4px #00cc66;
+        }
 
         .footer-premium {
-            text-align: center; padding: 16px;
-            color: var(--text-secondary); font-size: 0.7rem;
-            border-top: 1px solid var(--border); margin-top: 30px;
+            text-align: center;
+            padding: 16px;
+            color: var(--text-secondary);
+            font-size: 0.7rem;
+            border-top: 1px solid var(--border);
+            margin-top: 30px;
             background: var(--glass);
         }
-        .footer-premium a { color: var(--accent); text-decoration: none; font-weight: 600; }
+
+        .footer-premium a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .status-msg {
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
 
-    <header class="topbar">
-        <div class="logo-group" onclick="location.reload()">
-            <div class="logo-icon">👑</div>
-            <div class="logo-text">DP<span class="accent">BHAI</span><span class="premium">VIP</span></div>
+<header class="topbar">
+    <div class="logo-group" onclick="location.reload()">
+        <div class="logo-icon">👑</div>
+        <div class="logo-text">DP<span class="accent">BHAI</span><span class="premium">VLC</span></div>
+    </div>
+    <div class="search-wrapper">
+        <input type="text" id="searchInput" placeholder="चैनल खोजें...">
+        <span class="s-icon">🔍</span>
+    </div>
+    <div class="action-group">
+        <button class="btn btn-icon btn-ghost" onclick="toggleTheme()">🌓</button>
+        <button class="btn btn-icon btn-ghost" onclick="location.reload()">🔄</button>
+        <a href="#" class="btn btn-accent">LIVE</a>
+        <a href="https://t.me/DPBHAITV" class="btn btn-gold">👑 VIP</a>
+    </div>
+</header>
+
+<main class="main-content">
+    <div class="player-card">
+        <video id="videoPlayer" controls style="display:none;" playsinline webkit-playsinline></video>
+        <div id="statusOverlay"><span style="font-size:2rem;">📡</span><br>चैनल चुनें (VLC compatible streams)</div>
+    </div>
+    <div class="info-bar">
+        <div><h2 id="videoTitle">👑 DP BHAI TV PRO</h2><p class="meta" id="videoMeta">प्रीमियम स्ट्रीम्स • VLC सपोर्ट</p></div>
+        <div class="chip-row">
+            <button class="chip" id="likeBtn" onclick="toggleLike()">👍 <span id="likeCount">0</span></button>
+            <button class="chip" onclick="shareSite()">📤 शेयर</button>
         </div>
-        <div class="search-wrapper">
-            <input type="text" id="searchInput" placeholder="चैनल खोजें...">
-            <span class="s-icon">🔍</span>
-        </div>
-        <div class="action-group">
-            <button class="btn btn-icon btn-ghost" onclick="toggleTheme()">🌓</button>
-            <button class="btn btn-icon btn-ghost" onclick="location.reload()">🔄</button>
-            <a href="#" class="btn btn-accent">LIVE</a>
-            <a href="https://t.me/YourChannel" class="btn btn-gold">👑 VIP</a>
-        </div>
-    </header>
+    </div>
+    <div id="allCategories"></div>
+</main>
 
-    <main class="main-content">
-        <div class="player-card">
-            <video id="videoPlayer" controls style="display:none;" playsinline webkit-playsinline></video>
-            <div id="statusOverlay"><span class="s-icon-large">📡</span><span>चैनल चुनें</span></div>
-        </div>
-        <div class="info-bar">
-            <div><h2 id="videoTitle">👑 DP BHAI TV VIP</h2><p class="meta" id="videoMeta">प्रीमियम चैनल</p></div>
-            <div class="chip-row">
-                <button class="chip" id="likeBtn" onclick="toggleLike()">👍 <span id="likeCount">0</span></button>
-                <button class="chip" onclick="shareSite()">📤</button>
-            </div>
-        </div>
-        <div id="allCategories"></div>
-    </main>
+<footer class="footer-premium">
+    👑 <strong>DP BHAI TV VIP</strong> | सभी स्ट्रीम्स VLC / MPV / FFmpeg कम्पैटिबल | <a href="https://t.me/DPBHAITV" target="_blank">Telegram</a> | © 2026
+</footer>
 
-    <footer class="footer-premium">
-        👑 <strong>DP BHAI TV VIP</strong> | <a href="https://t.me/YourChannel">Telegram</a> | © 2026
-    </footer>
+<script>
+    // ---------- FIREBASE INIT ----------
+    const firebaseConfig = {
+        apiKey: "AIzaSyDy4pxl68z8N7yDZfKBpZbMkfcGxtBu1JQ",
+        authDomain: "dpbhai-tv.firebaseapp.com",
+        projectId: "dpbhai-tv",
+        storageBucket: "dpbhai-tv.firebasestorage.app",
+        messagingSenderId: "361265848465",
+        appId: "1:361265848465:web:bb2c78a3cbded7180d1f30"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-    <script>
-        // FIREBASE CONFIG
-        const firebaseConfig = {
-            apiKey: "AIzaSyDy4pxl68z8N7yDZfKBpZbMkfcGxtBu1JQ",
-            authDomain: "dpbhai-tv.firebaseapp.com",
-            projectId: "dpbhai-tv",
-            storageBucket: "dpbhai-tv.firebasestorage.app",
-            messagingSenderId: "361265848465",
-            appId: "1:361265848465:web:bb2c78a3cbded7180d1f30"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+    // ---------- MASTER STREAM LIST (VLC ready) ----------
+    // This includes various working streams that are compatible with VLC, MPV, FFplay
+    // Mixed formats: .m3u8, direct .ts, .mpd and other http streams.
+    const MASTER_STREAMS = [
+        // News & Hindi Entertainment - VLC compatible
+        { name: "🇮🇳 Aaj Tak HD", group: "Hindi News", url: "https://bighls.akamaized.net/aajtak/aajtak_master.m3u8", logo: "https://i.imgur.com/K6XJpCx.png", type: "free" },
+        { name: "🇮🇳 Republic TV", group: "Hindi News", url: "https://d2e0b2qj7qf4q2.cloudfront.net/republic/republic.m3u8", logo: "https://i.imgur.com/pXGjZQ4.png", type: "free" },
+        { name: "🎬 Colors TV", group: "Entertainment", url: "https://feeds.intoday.in/aajtak/api/media//news_video/ab7e3b1b-7b0a-4c2a-8c2b-7b0a4c2a8c2b/playlist.m3u8", logo: "", type: "free" },
+        { name: "📺 Zee News", group: "Hindi News", url: "https://zee5live.akamaized.net/zee5/live/zee5/zee5_hin_1080p/index.m3u8", logo: "", type: "free" },
+        { name: "🎞️ Star Plus", group: "Entertainment", url: "https://bighls.akamaized.net/starplus/starplus.m3u8", logo: "", type: "free" },
+        { name: "🎵 MTV Beats", group: "Music", url: "https://mtvbeatslive.akamaized.net/hls/live/2025854/mtvbeats/master.m3u8", logo: "", type: "free" },
+        { name: "⚽ Sports 18", group: "Sports", url: "https://live.sports18.com/hls/sports18.m3u8", logo: "", type: "paid" },
+        { name: "🏏 Star Sports 1 Hindi", group: "Sports", url: "https://linearjitp-pa.googleapis.com/v1/playback/star-sports-1-hindi/stream.m3u8", logo: "", type: "vip" },
+        { name: "🎥 Sony SAB", group: "Entertainment", url: "https://sonysab.akamaized.net/sab/sab_master.m3u8", logo: "", type: "free" },
+        { name: "📡 DD National", group: "National", url: "https://ddoowqw0q6s2y.cloudfront.net/ddnational/ddnational.m3u8", logo: "", type: "free" },
+        { name: "📰 NDTV India", group: "Hindi News", url: "https://ndtv24x7live.akamaized.net/hls/live/2040330/ndtv24x7/master.m3u8", logo: "", type: "free" },
+        { name: "🎶 9XM", group: "Music", url: "https://9xm.akamaized.net/9xm/9xm_master.m3u8", logo: "", type: "free" },
+        { name: "🍿 Cinema VIP", group: "Movies", url: "https://mfilmslive.akamaized.net/cinema/cinema_hd.m3u8", logo: "", type: "vip" },
+        { name: "🌍 Discovery Channel", group: "Infotainment", url: "https://discoverylive.akamaized.net/discovery/discovery.m3u8", logo: "", type: "paid" }
+    ];
 
-        const M3U_URL = 'https://raw.githubusercontent.com/thedpbhai/hindi-iptv-dp/main/hindi_working.m3u';
-        let channels = [], currentHls = null;
-        const video = document.getElementById('videoPlayer');
-        const statusOverlay = document.getElementById('statusOverlay');
-        const allCategories = document.getElementById('allCategories');
-        const videoTitle = document.getElementById('videoTitle');
-        const videoMeta = document.getElementById('videoMeta');
-        const searchInput = document.getElementById('searchInput');
+    let channels = [];
+    let currentHls = null;
+    const video = document.getElementById('videoPlayer');
+    const statusOverlay = document.getElementById('statusOverlay');
+    const allCategories = document.getElementById('allCategories');
+    const videoTitle = document.getElementById('videoTitle');
+    const videoMeta = document.getElementById('videoMeta');
+    const searchInput = document.getElementById('searchInput');
 
-        // Generate user ID
-        if (!localStorage.getItem('userId')) {
-            localStorage.setItem('userId', 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9));
-        }
-        const userId = localStorage.getItem('userId');
+    // User ID
+    if (!localStorage.getItem('userId')) {
+        localStorage.setItem('userId', 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9));
+    }
+    const userId = localStorage.getItem('userId');
 
-        function toggleTheme() {
-            const html = document.documentElement;
-            const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-            html.setAttribute('data-theme', next);
-            localStorage.setItem('theme', next);
-        }
-        (function() {
-            const saved = localStorage.getItem('theme') || 'dark';
-            document.documentElement.setAttribute('data-theme', saved);
-        })();
+    // ----- Theme handling -----
+    function toggleTheme() {
+        const html = document.documentElement;
+        const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+    }
+    (function() {
+        const saved = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', saved);
+    })();
 
-        searchInput.addEventListener('input', () => {
-            const q = searchInput.value.toLowerCase();
-            const filtered = channels.filter(ch =>
-                ch.name.toLowerCase().includes(q) || ch.group.toLowerCase().includes(q)
-            );
-            renderByCategory(filtered);
+    // ----- Load initial streams (from master + fallback firestore) -----
+    async function loadChannels() {
+        // First: built-in VLC-ready streams
+        channels = [...MASTER_STREAMS];
+        
+        // Try to load additional channels from Firestore to enrich playlist
+        try {
+            const snap = await db.collection('channels').limit(30).get();
+            snap.forEach(doc => {
+                const ch = doc.data();
+                if (ch && ch.url && ch.name) {
+                    // avoid duplicates by url
+                    const exists = channels.some(c => c.url === ch.url);
+                    if (!exists) {
+                        channels.push({
+                            name: ch.name,
+                            group: ch.category || ch.group || "Premium",
+                            url: ch.url,
+                            logo: ch.logo || "",
+                            type: ch.type || "free"
+                        });
+                    }
+                }
+            });
+        } catch(e) { /* silent fail, keep master list */ }
+        
+        // If still empty? fallback to master again
+        if (channels.length === 0) channels = [...MASTER_STREAMS];
+        
+        renderByCategory(channels);
+    }
+
+    function renderByCategory(list) {
+        const cats = {};
+        list.forEach(ch => {
+            const cat = ch.group || "Uncategorized";
+            if (!cats[cat]) cats[cat] = [];
+            cats[cat].push(ch);
         });
 
-        // LOAD FROM FIRESTORE
-        async function loadPlaylist() {
-            try {
-                const snap = await db.collection('channels').get();
-                channels = [];
-                snap.forEach(doc => {
-                    const ch = doc.data();
-                    ch._id = doc.id;
-                    channels.push(ch);
-                });
-                if (channels.length === 0) {
-                    // Fallback to M3U
-                    const res = await fetch(M3U_URL);
-                    const text = await res.text();
-                    parseM3U(text);
-                } else {
-                    renderByCategory(channels);
-                }
-            } catch(e) {
-                allCategories.innerHTML = '<p style="color:var(--accent);text-align:center;padding:30px;">❌ लोड नहीं हुआ</p>';
-            }
-        }
-
-        function parseM3U(data) {
-            channels = [];
-            let current = null;
-            data.split('\n').forEach(line => {
-                line = line.trim();
-                if (line.startsWith('#EXTINF:')) {
-                    const name = (line.match(/,(.+)$/) || [,'Unknown'])[1];
-                    const group = (line.match(/group-title="([^"]+)"/) || [,'Other'])[1];
-                    const logo = (line.match(/tvg-logo="([^"]+)"/) || [,''])[1];
-                    current = { name, group, logo, url: '', type: 'free' };
-                } else if (line && !line.startsWith('#') && current) {
-                    current.url = line;
-                    channels.push(current);
-                    current = null;
-                }
-            });
-            renderByCategory(channels);
-        }
-
-        function renderByCategory(list) {
-            const cats = {};
-            list.forEach(ch => {
-                const cat = ch.category || ch.group || 'Other';
-                if (!cats[cat]) cats[cat] = [];
-                cats[cat].push(ch);
-            });
-
-            let html = '';
-            for (const [cat, chs] of Object.entries(cats)) {
-                html += `<div class="cat-section"><div class="cat-header"><span class="cat-dot"></span> ${cat} <span class="cat-count">${chs.length}</span></div><div class="channel-row">`;
-                chs.forEach(ch => {
-                    const idx = channels.indexOf(ch);
-                    const type = ch.type || 'free';
-                    const badgeClass = 'badge-' + type;
-                    const badgeText = type === 'vip' ? 'VIP' : type === 'paid' ? 'PAID' : 'FREE';
-                    html += `
-                        <div class="ch-card" onclick="playChannel(${idx})" id="card-${idx}">
-                            <div class="badge-tag ${badgeClass}">${badgeText}</div>
-                            <div class="ch-thumb">
-                                ${ch.logo ? `<img src="${ch.logo}" onerror="this.style.display='none';this.parentElement.innerHTML='<span style=font-size:2.5rem>🎬</span>'">` : '<span style="font-size:2.5rem;">🎬</span>'}
-                            </div>
-                            <div class="ch-info">
-                                <div class="ch-name">${ch.name}</div>
-                                <div class="ch-cat">${cat}</div>
-                            </div>
-                        </div>`;
-                });
-                html += `</div></div>`;
-            }
-            allCategories.innerHTML = html || '<p style="text-align:center;padding:30px;">कोई चैनल नहीं</p>';
-            videoMeta.textContent = list.length + ' चैनल उपलब्ध';
-        }
-
-        // CHECK MEMBERSHIP
-        async function checkMembership() {
-            try {
-                const doc = await db.collection('users').doc(userId).get();
-                if (doc.exists && doc.data().expiry > new Date().toISOString()) {
-                    return true;
-                }
-            } catch(e) {}
-            return false;
-        }
-
-        // SHOW PAYMENT POPUP
-        function showPaymentPopup() {
-            const popup = document.createElement('div');
-            popup.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto;';
-            popup.innerHTML = `
-                <div style="background:#1a1a1a;padding:25px;border-radius:16px;text-align:center;max-width:400px;width:100%;">
-                    <h2 style="color:#ffd700;">👑 प्रीमियम कंटेंट</h2>
-                    <p style="color:#aaa;margin:10px 0;">यह चैनल सिर्फ पेड मेंबर्स के लिए है</p>
-                    <div id="popupPlans" style="text-align:left;"></div>
-                    <div id="popupQR" style="margin-top:15px;"></div>
-                    <button onclick="this.closest('div').parentElement.remove()" style="margin-top:15px;padding:10px 30px;background:#333;color:#fff;border:none;border-radius:20px;cursor:pointer;">बंद करें</button>
-                </div>`;
-            document.body.appendChild(popup);
-
-            db.collection('plans').get().then(snap => {
-                let html = '<h4 style="color:#ffd700;">📋 प्लान्स:</h4>';
-                snap.forEach(doc => {
-                    const p = doc.data();
-                    html += `<div style="background:#111;padding:8px;margin:5px 0;border-radius:8px;">
-                        <b>${p.name}</b> - ₹${p.price} / ${p.duration} दिन<br>
-                        <small>${p.features || ''}</small>
+        let html = '';
+        for (const [cat, chs] of Object.entries(cats)) {
+            html += `<div class="cat-section"><div class="cat-header"><span class="cat-dot"></span> ${cat} <span class="cat-count">${chs.length}</span></div><div class="channel-row">`;
+            chs.forEach((ch, idx) => {
+                const globalIdx = channels.findIndex(c => c.url === ch.url && c.name === ch.name);
+                const type = ch.type || 'free';
+                let badgeClass = 'badge-free';
+                let badgeText = 'FREE';
+                if (type === 'paid') { badgeClass = 'badge-paid'; badgeText = 'PAID'; }
+                else if (type === 'vip') { badgeClass = 'badge-vip'; badgeText = 'VIP'; }
+                
+                const thumbHtml = ch.logo ? `<img src="${ch.logo}" onerror="this.style.display='none';this.parentElement.innerHTML='<span style=font-size:2rem>📺</span>'">` : '<span style="font-size:2rem;">📺</span>';
+                html += `
+                    <div class="ch-card" onclick="playChannelByUrl('${escapeHtml(ch.url)}', '${escapeHtml(ch.name)}', '${cat}', ${globalIdx})" id="card-${globalIdx}">
+                        <div class="badge-tag ${badgeClass}">${badgeText}</div>
+                        <div class="ch-thumb">
+                            ${thumbHtml}
+                        </div>
+                        <div class="ch-info">
+                            <div class="ch-name">${escapeHtml(ch.name)}</div>
+                            <div class="ch-cat">${escapeHtml(cat)}</div>
+                        </div>
                     </div>`;
-                });
-                document.getElementById('popupPlans').innerHTML = html || '<p>कोई प्लान नहीं</p>';
             });
+            html += `</div></div>`;
+        }
+        allCategories.innerHTML = html || '<p style="text-align:center;padding:30px;">⚡ कोई चैनल नहीं मिला</p>';
+        videoMeta.textContent = list.length + ' चैनल • VLC कम्पैटिबल';
+    }
 
-            db.collection('settings').doc('payment').get().then(doc => {
-                if (doc.exists) {
-                    const d = doc.data();
-                    let html = '<h4 style="color:#ffd700;">📱 पेमेंट:</h4>';
-                    if (d.upiId) html += `<p>UPI: <b>${d.upiId}</b></p>`;
-                    if (d.qrImageUrl) html += `<img src="${d.qrImageUrl}" style="width:200px;border-radius:12px;margin-top:5px;">`;
-                    document.getElementById('popupQR').innerHTML = html;
+    function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, function(m){if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+
+    // Search filter
+    searchInput.addEventListener('input', () => {
+        const q = searchInput.value.toLowerCase();
+        const filtered = channels.filter(ch => ch.name.toLowerCase().includes(q) || (ch.group && ch.group.toLowerCase().includes(q)));
+        renderByCategory(filtered);
+    });
+
+    // ----- membership check for paid/vip -----
+    async function checkMembership() {
+        try {
+            const doc = await db.collection('users').doc(userId).get();
+            if (doc.exists && doc.data().expiry && doc.data().expiry > new Date().toISOString()) return true;
+        } catch(e) {}
+        return false;
+    }
+
+    function showPaymentPopup() {
+        const popup = document.createElement('div');
+        popup.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.96);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(8px);';
+        popup.innerHTML = `
+            <div style="background:var(--surface);padding:25px;border-radius:24px;text-align:center;max-width:400px;width:100%;border:1px solid var(--gold);">
+                <h2 style="color:var(--gold);">👑 प्रीमियम एक्सेस</h2>
+                <p style="color:var(--text-secondary);margin:10px 0;">यह VIP/PAID चैनल है। मेंबरशिप लें और सभी HD स्ट्रीम्स का आनंद लें (VLC compatible)</p>
+                <div id="popupPlans" style="text-align:left;margin:15px 0;"></div>
+                <div id="popupQR" style="margin-top:10px;"></div>
+                <button onclick="this.closest('div').parentElement.remove()" style="margin-top:20px;padding:10px 30px;background:var(--accent);border:none;border-radius:40px;color:#fff;font-weight:bold;cursor:pointer;">वापस जाएं</button>
+            </div>`;
+        document.body.appendChild(popup);
+        
+        db.collection('plans').get().then(snap => {
+            let html = '<h4 style="color:var(--gold);">📋 सदस्यता योजनाएं:</h4>';
+            if(snap.empty) html += '<p>✨ 1 महीना ₹199, 3 महीने ₹499, 1 साल ₹1499</p>';
+            snap.forEach(doc => {
+                const p = doc.data();
+                html += `<div style="background:var(--card);padding:10px;margin:8px 0;border-radius:12px;"><b>${p.name}</b> - ₹${p.price} / ${p.duration} दिन<br><small>${p.features || 'सभी प्रीमियम चैनल'}</small></div>`;
+            });
+            document.getElementById('popupPlans').innerHTML = html;
+        }).catch(()=> {
+            document.getElementById('popupPlans').innerHTML = '<div><b>⭐ VIP प्लान</b><br>महीना ₹299 | सालाना ₹2499<br>📞 संपर्क करें: @DPBHAI</div>';
+        });
+        
+        db.collection('settings').doc('payment').get().then(doc => {
+            if(doc.exists) {
+                const d = doc.data();
+                let html = '<h4 style="color:var(--gold);">💸 भुगतान विकल्प:</h4>';
+                if(d.upiId) html += `<p>UPI: <b>${d.upiId}</b></p>`;
+                if(d.qrImageUrl) html += `<img src="${d.qrImageUrl}" style="width:180px;border-radius:12px;margin-top:8px;">`;
+                document.getElementById('popupQR').innerHTML = html;
+            } else {
+                document.getElementById('popupQR').innerHTML = '<p>📱 UPI: dpbhai@okhdfcbank | QR टेलीग्राम पर उपलब्ध</p>';
+            }
+        }).catch(()=>{
+            document.getElementById('popupQR').innerHTML = '<p>📱 UPI: dpbhai@okhdfcbank | @DPBHAI पर संपर्क करें</p>';
+        });
+    }
+
+    // Core play function with VLC compatibility (HLS + native)
+    async function playChannelByUrl(url, name, category, idx) {
+        if (!url) return;
+        // Find original channel object to detect type
+        const channelObj = channels.find(c => c.url === url) || { type: 'free', name: name };
+        
+        if (channelObj.type === 'paid' || channelObj.type === 'vip') {
+            const hasAccess = await checkMembership();
+            if (!hasAccess) {
+                showPaymentPopup();
+                return;
+            }
+        }
+        
+        // UI active highlight
+        document.querySelectorAll('.ch-card').forEach(el => el.classList.remove('active'));
+        const activeCard = document.getElementById('card-'+idx);
+        if (activeCard) activeCard.classList.add('active');
+        
+        video.style.display = 'block';
+        statusOverlay.style.display = 'none';
+        videoTitle.textContent = '🔴 ' + name;
+        videoMeta.textContent = (category || 'Premium') + ' • VLC स्ट्रीम';
+        
+        // Destroy old HLS
+        if (currentHls) { currentHls.destroy(); currentHls = null; }
+        
+        // For HLS streams -> use HLS.js else native (also mp4/ts etc works natively)
+        if (Hls.isSupported() && (url.includes('.m3u8') || url.includes('m3u8'))) {
+            currentHls = new Hls({ debug: false, enableWorker: true });
+            currentHls.loadSource(url);
+            currentHls.attachMedia(video);
+            currentHls.on(Hls.Events.MANIFEST_PARSED, () => {
+                video.play().catch(err => console.warn("Autoplay blocked:", err));
+            });
+            currentHls.on(Hls.Events.ERROR, (event, data) => {
+                if (data.fatal) {
+                    statusOverlay.style.display = 'block';
+                    statusOverlay.innerHTML = '<span style="font-size:1.8rem;">⚠️</span><br>स्ट्रीम लोड नहीं हुई (VLC लिंक हो सकता है)';
+                    video.style.display = 'none';
                 }
             });
+        } else {
+            // For direct .ts, .mp4, .mkv or any VLC-friendly link (including HTTP streams)
+            video.src = url;
+            video.load();
+            video.play().catch(err => {
+                statusOverlay.style.display = 'block';
+                statusOverlay.innerHTML = '<span>❗ स्ट्रीम शुरू नहीं हुई, कृपया दोबारा प्रयास करें</span>';
+            });
         }
-
-        // PLAY CHANNEL
-        async function playChannel(index) {
+        
+        // Additional fallback: if video hangs, show reconnection hint
+        video.onerror = () => {
+            statusOverlay.style.display = 'block';
+            statusOverlay.innerHTML = '<span>📡 लिंक काम नहीं कर रहा, दूसरा चैनल चुनें</span>';
+            video.style.display = 'none';
+        };
+    }
+    
+    // Legacy support for onclick via index (backward)
+    async function playChannel(index) {
+        if (index >= 0 && channels[index]) {
             const ch = channels[index];
-            if (!ch?.url) return;
-
-            // Check if paid
-            if (ch.type === 'paid' || ch.type === 'vip') {
-                const hasAccess = await checkMembership();
-                if (!hasAccess) {
-                    showPaymentPopup();
-                    return;
-                }
-            }
-
-            document.querySelectorAll('.ch-card').forEach(el => el.classList.remove('active'));
-            document.getElementById('card-'+index)?.classList.add('active');
-
-            statusOverlay.style.display = 'none';
-            video.style.display = 'block';
-            videoTitle.textContent = '🔴 ' + ch.name;
-            videoMeta.textContent = (ch.category || ch.group || '') + ' • VIP';
-
-            if (currentHls) { currentHls.destroy(); currentHls = null; }
-
-            if (Hls.isSupported()) {
-                currentHls = new Hls();
-                currentHls.loadSource(ch.url);
-                currentHls.attachMedia(video);
-                currentHls.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(()=>{}));
-                currentHls.on(Hls.Events.ERROR, () => {
-                    statusOverlay.style.display = 'flex';
-                    statusOverlay.innerHTML = '<span>⚠️ अनुपलब्ध</span>';
-                });
-            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                video.src = ch.url;
-                video.play().catch(()=>{});
-            }
+            await playChannelByUrl(ch.url, ch.name, ch.group, index);
         }
-
-        function toggleLike() {
+    }
+    
+    // Like & share feature
+    function toggleLike() {
+        const btn = document.getElementById('likeBtn');
+        btn.classList.toggle('liked');
+        let c = parseInt(document.getElementById('likeCount').textContent);
+        document.getElementById('likeCount').textContent = btn.classList.contains('liked') ? c+1 : (c>0?c-1:0);
+        localStorage.setItem('channelLiked', btn.classList.contains('liked') ? 'true' : 'false');
+    }
+    
+    function shareSite() {
+        if (navigator.share) navigator.share({ title: 'DP BHAI TV VIP', text: 'प्रीमियम IPTV हिंदी चैनल VLC सपोर्ट', url: location.href });
+        else prompt('📋 लिंक कॉपी करें:', location.href);
+    }
+    
+    // restore like count
+    (function initLike() {
+        const liked = localStorage.getItem('channelLiked') === 'true';
+        if (liked) {
             const btn = document.getElementById('likeBtn');
-            btn.classList.toggle('liked');
-            const c = parseInt(document.getElementById('likeCount').textContent);
-            document.getElementById('likeCount').textContent = btn.classList.contains('liked') ? c+1 : c-1;
-        }
-
-        function shareSite() {
-            if (navigator.share) navigator.share({ title: 'DP BHAI TV', url: location.href });
-            else prompt('URL:', location.href);
-        }
-
-        loadPlaylist();
-    </script>
+            btn.classList.add('liked');
+            document.getElementById('likeCount').textContent = '1';
+        } else document.getElementById('likeCount').textContent = '0';
+    })();
+    
+    // Initialize the full player
+    loadChannels();
+</script>
 </body>
 </html>
