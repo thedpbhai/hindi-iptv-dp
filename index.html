@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DP BHAI TV - Live Hindi Channels</title>
+    <title>DP BHAI TV - Hindi Live Channels</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -11,52 +11,40 @@
             font-family: 'Roboto', Arial, sans-serif;
             background: #0f0f0f;
             color: #fff;
-            overflow-x: hidden;
         }
-        /* HEADER - YouTube Style */
-        .header {
+        /* TOP BAR */
+        .topbar {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 8px 20px;
+            padding: 8px 16px;
             background: #0f0f0f;
-            border-bottom: 1px solid #272727;
             position: sticky;
             top: 0;
             z-index: 100;
+            gap: 10px;
         }
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        .menu-icon { font-size: 1.3rem; cursor: pointer; }
         .logo {
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 8px;
             font-weight: 700;
-            font-size: 1.2rem;
-            letter-spacing: -0.5px;
+            font-size: 1.1rem;
+            white-space: nowrap;
         }
         .logo-icon {
             background: #ff0000;
-            width: 30px; height: 30px;
+            width: 32px; height: 32px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.9rem;
-        }
-        .header-center {
-            display: flex;
-            align-items: center;
-            max-width: 500px;
-            width: 100%;
+            font-size: 0.8rem;
         }
         .search-box {
             display: flex;
-            width: 100%;
+            flex: 1;
+            max-width: 500px;
         }
         .search-box input {
             width: 100%;
@@ -65,60 +53,51 @@
             border: 1px solid #303030;
             border-radius: 20px 0 0 20px;
             color: #fff;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             outline: none;
         }
-        .search-box input:focus { border-color: #1c62b9; }
-        .search-btn {
+        .search-box input:focus { border-color: #3ea6ff; }
+        .search-box button {
             background: #222;
             border: 1px solid #303030;
             border-left: none;
-            padding: 8px 20px;
+            padding: 8px 15px;
             border-radius: 0 20px 20px 0;
             color: #fff;
             cursor: pointer;
         }
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        .live-btn {
+        .live-badge {
             background: #ff0000;
             color: #fff;
-            padding: 6px 15px;
+            padding: 6px 14px;
             border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            animation: livePulse 2s infinite;
+            font-size: 0.75rem;
+            font-weight: 700;
+            animation: pulse 2s infinite;
+            white-space: nowrap;
             text-decoration: none;
         }
-        @keyframes livePulse {
+        @keyframes pulse {
             0%,100% { box-shadow: 0 0 0 0 rgba(255,0,0,0.4); }
             50% { box-shadow: 0 0 0 10px rgba(255,0,0,0); }
         }
-        .sponsor-chip {
+        .sponsor-btn {
             background: #ffd700;
             color: #000;
-            padding: 5px 12px;
+            padding: 6px 12px;
             border-radius: 20px;
             font-size: 0.75rem;
             font-weight: 700;
             text-decoration: none;
+            white-space: nowrap;
         }
         /* MAIN CONTENT */
         .main-content {
-            display: flex;
-            padding: 15px;
-            gap: 15px;
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
+            padding: 15px;
         }
-        /* PLAYER SECTION */
-        .player-section {
-            flex: 1;
-            max-width: 75%;
-        }
+        /* VIDEO PLAYER */
         .video-container {
             background: #000;
             border-radius: 12px;
@@ -128,6 +107,7 @@
             align-items: center;
             justify-content: center;
             position: relative;
+            margin-bottom: 12px;
         }
         video {
             width: 100%;
@@ -136,158 +116,138 @@
         }
         #statusOverlay {
             position: absolute;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            color: #aaa;
+            text-align: center;
+            color: #888;
         }
-        #statusOverlay .icon { font-size: 4rem; }
-        .video-info {
-            padding: 12px 0;
-        }
+        #statusOverlay .icon { font-size: 3rem; }
         .video-title {
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             font-weight: 600;
+            margin-bottom: 4px;
         }
         .video-meta {
             color: #aaa;
             font-size: 0.8rem;
-            margin-top: 4px;
+            margin-bottom: 20px;
         }
-        /* SIDEBAR CHANNELS */
-        .sidebar {
-            width: 25%;
-            min-width: 280px;
-        }
-        .sidebar h3 {
-            font-size: 0.9rem;
-            color: #aaa;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .channel-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            max-height: 60vh;
-            overflow-y: auto;
-        }
-        .channel-card {
+        /* CHANNEL SECTION */
+        .section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 8px 10px;
+            gap: 8px;
+        }
+        .channel-strip {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            scroll-behavior: smooth;
+        }
+        .channel-strip::-webkit-scrollbar { height: 4px; }
+        .channel-strip::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
+        .channel-card {
+            min-width: 160px;
+            max-width: 180px;
             background: #1a1a1a;
-            border-radius: 10px;
+            border-radius: 12px;
+            overflow: hidden;
             cursor: pointer;
             transition: 0.2s;
+            flex-shrink: 0;
         }
-        .channel-card:hover { background: #272727; }
+        .channel-card:hover { background: #272727; transform: translateY(-2px); }
         .channel-card.active {
-            background: #263850;
-            border: 1px solid #3ea6ff;
+            background: #1a3a5c;
+            border: 2px solid #3ea6ff;
         }
-        .ch-thumb {
-            width: 45px; height: 45px;
-            background: #333;
-            border-radius: 8px;
+        .card-thumb {
+            width: 100%;
+            aspect-ratio: 16/10;
+            background: #252525;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
-            flex-shrink: 0;
+            font-size: 2rem;
         }
-        .ch-details { flex: 1; min-width: 0; }
-        .ch-name {
-            font-size: 0.85rem;
+        .card-info {
+            padding: 8px 10px;
+        }
+        .card-name {
+            font-size: 0.8rem;
             font-weight: 500;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        .ch-cat {
+        .card-cat {
             font-size: 0.7rem;
             color: #888;
         }
-        .live-indicator {
-            width: 8px; height: 8px;
+        .live-dot {
+            display: inline-block;
+            width: 6px; height: 6px;
             background: #ff0000;
             border-radius: 50%;
-            flex-shrink: 0;
+            margin-right: 4px;
         }
-        /* SPONSOR BAR */
-        .sponsor-bar {
-            background: #1a1a1a;
-            padding: 10px 20px;
+        /* SPONSOR */
+        .sponsor-footer {
             text-align: center;
+            padding: 15px;
+            color: #888;
             font-size: 0.85rem;
-            border-top: 1px solid #272727;
+            border-top: 1px solid #222;
             margin-top: 20px;
         }
-        .sponsor-bar a { color: #3ea6ff; text-decoration: none; font-weight: 600; }
-        .sponsor-bar a:hover { text-decoration: underline; }
+        .sponsor-footer a { color: #3ea6ff; text-decoration: none; font-weight: 600; }
         /* RESPONSIVE */
-        @media (max-width: 768px) {
-            .main-content { flex-direction: column; padding: 10px; }
-            .player-section { max-width: 100%; }
-            .sidebar { width: 100%; min-width: auto; }
-            .channel-grid { max-height: 30vh; flex-direction: row; flex-wrap: wrap; gap: 8px; overflow-x: auto; }
-            .channel-card { min-width: 140px; flex-shrink: 0; }
-            .header-center { display: none; }
+        @media (max-width: 600px) {
+            .topbar { flex-wrap: wrap; gap: 8px; }
+            .search-box { order: 3; max-width: 100%; flex: 100%; }
+            .channel-card { min-width: 140px; }
+            .video-container { aspect-ratio: 16/9; }
         }
     </style>
 </head>
 <body>
 
-    <!-- HEADER -->
-    <div class="header">
-        <div class="header-left">
-            <span class="menu-icon">☰</span>
-            <div class="logo">
-                <div class="logo-icon">▶</div>
-                DP BHAI TV
-            </div>
+    <!-- TOP BAR -->
+    <div class="topbar">
+        <div class="logo">
+            <div class="logo-icon">▶</div>
+            DP BHAI TV
         </div>
-        <div class="header-center">
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="चैनल सर्च करें" oninput="filterChannels()">
-                <button class="search-btn">🔍</button>
-            </div>
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="चैनल सर्च करें..." oninput="filterChannels()">
+            <button>🔍</button>
         </div>
-        <div class="header-right">
-            <a href="#" class="live-btn">🔴 LIVE</a>
-            <a href="https://t.me/YourChannel" target="_blank" class="sponsor-chip">⭐ Sponsor</a>
-        </div>
+        <a href="#" class="live-badge">🔴 LIVE</a>
+        <a href="https://t.me/YourChannel" target="_blank" class="sponsor-btn">⭐ Sponsor</a>
     </div>
 
-    <!-- MAIN -->
+    <!-- MAIN CONTENT -->
     <div class="main-content">
-        <!-- PLAYER -->
-        <div class="player-section">
-            <div class="video-container">
-                <video id="videoPlayer" controls style="display:none;"></video>
-                <div id="statusOverlay">
-                    <div class="icon">📡</div>
-                    <div>दाईं ओर से चैनल चुनें</div>
-                </div>
-            </div>
-            <div class="video-info">
-                <div class="video-title" id="videoTitle">कोई चैनल नहीं चल रहा</div>
-                <div class="video-meta" id="videoMeta">16 चैनल उपलब्ध • DP BHAI TV</div>
+        <!-- VIDEO PLAYER -->
+        <div class="video-container">
+            <video id="videoPlayer" controls style="display:none;"></video>
+            <div id="statusOverlay">
+                <div class="icon">📡</div>
+                <div>नीचे से चैनल चुनें</div>
             </div>
         </div>
+        <div class="video-title" id="videoTitle">🔴 कोई चैनल नहीं चल रहा</div>
+        <div class="video-meta" id="videoMeta">16 हिंदी चैनल • DP BHAI TV</div>
 
-        <!-- SIDEBAR -->
-        <div class="sidebar">
-            <h3>📺 सभी चैनल</h3>
-            <div class="channel-grid" id="channelGrid"></div>
-        </div>
+        <!-- CHANNEL LIST -->
+        <div class="section-title">📺 आपके लिए</div>
+        <div class="channel-strip" id="channelStrip"></div>
     </div>
 
-    <!-- SPONSOR -->
-    <div class="sponsor-bar">
+    <!-- SPONSOR FOOTER -->
+    <div class="sponsor-footer">
         🚀 <strong>Sponsored by:</strong> <a href="https://t.me/YourChannel" target="_blank">@YourChannel</a> | 
         <a href="https://www.paypal.com/your-link" target="_blank">❤️ Support Us</a>
     </div>
@@ -297,7 +257,7 @@
         let channels = [], currentHls = null;
         const video = document.getElementById('videoPlayer');
         const statusOverlay = document.getElementById('statusOverlay');
-        const channelGrid = document.getElementById('channelGrid');
+        const channelStrip = document.getElementById('channelStrip');
         const videoTitle = document.getElementById('videoTitle');
         const videoMeta = document.getElementById('videoMeta');
 
@@ -307,7 +267,7 @@
                 const text = await res.text();
                 parseM3U(text);
             } catch(e) {
-                channelGrid.innerHTML = '<p style="color:red;">❌ लोड नहीं हुआ</p>';
+                channelStrip.innerHTML = '<p style="color:red;">❌ लोड नहीं हुआ</p>';
             }
         }
 
@@ -331,7 +291,7 @@
 
         function renderChannels(list) {
             if (list.length === 0) {
-                channelGrid.innerHTML = '<p style="color:#888;">कोई चैनल नहीं</p>';
+                channelStrip.innerHTML = '<p style="color:#888;">कोई चैनल नहीं</p>';
                 return;
             }
             let html = '';
@@ -339,15 +299,14 @@
                 const idx = channels.indexOf(ch);
                 html += `
                 <div class="channel-card" onclick="playChannel(${idx})" id="card-${idx}">
-                    <div class="ch-thumb">📺</div>
-                    <div class="ch-details">
-                        <div class="ch-name">${ch.name}</div>
-                        <div class="ch-cat">${ch.group}</div>
+                    <div class="card-thumb">📺</div>
+                    <div class="card-info">
+                        <div class="card-name"><span class="live-dot"></span>${ch.name}</div>
+                        <div class="card-cat">${ch.group}</div>
                     </div>
-                    <div class="live-indicator"></div>
                 </div>`;
             });
-            channelGrid.innerHTML = html;
+            channelStrip.innerHTML = html;
         }
 
         function filterChannels() {
