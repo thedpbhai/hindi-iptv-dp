@@ -582,7 +582,9 @@
     function renderByCategory(list) {
         const cats = {};
         list.forEach(ch => {
-            const cat = ch.group || "Uncategorized";
+            // अगर group नहीं है तो इस चैनल को स्किप करें
+if (!ch.group) return;
+const cat = ch.group;
             if (!cats[cat]) cats[cat] = [];
             cats[cat].push(ch);
         });
