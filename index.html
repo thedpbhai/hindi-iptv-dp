@@ -301,6 +301,46 @@
             border-color: var(--accent);
         }
 
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--card);
+            border-radius: 24px;
+            margin: 20px 0;
+            border: 1px dashed var(--border);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 16px;
+        }
+
+        .empty-state h3 {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            color: var(--gold);
+        }
+
+        .empty-state p {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            margin-bottom: 16px;
+        }
+
+        .empty-state .add-btn {
+            background: var(--gradient-1);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
         .cat-section {
             margin-bottom: 24px;
         }
@@ -486,13 +526,20 @@
         <div id="statusOverlay"><span style="font-size:2rem;">📡</span><br>चैनल चुनें (VLC compatible streams)</div>
     </div>
     <div class="info-bar">
-        <div><h2 id="videoTitle">👑 DP BHAI TV PRO</h2><p class="meta" id="videoMeta">प्रीमियम स्ट्रीम्स • VLC सपोर्ट</p></div>
+        <div><h2 id="videoTitle">👑 DP BHAI TV PRO</h2><p class="meta" id="videoMeta">कोई चैनल उपलब्ध नहीं • अपने स्ट्रीम जोड़ें</p></div>
         <div class="chip-row">
             <button class="chip" id="likeBtn" onclick="toggleLike()">👍 <span id="likeCount">0</span></button>
             <button class="chip" onclick="shareSite()">📤 शेयर</button>
         </div>
     </div>
-    <div id="allCategories"></div>
+    <div id="allCategories">
+        <div class="empty-state">
+            <div class="empty-state-icon">📭</div>
+            <h3>कोई चैनल नहीं मिला</h3>
+            <p>सभी पुराने चैनल हटा दिए गए हैं। अब आप अपनी खुद की स्ट्रीम जोड़ सकते हैं।</p>
+            <button class="add-btn" onclick="showAddChannelGuide()">➕ नया चैनल कैसे जोड़ें?</button>
+        </div>
+    </div>
 </main>
 
 <footer class="footer-premium">
@@ -512,28 +559,9 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // ---------- MASTER STREAM LIST (VLC ready) ----------
-    // This includes various working streams that are compatible with VLC, MPV, FFplay
-    // Mixed formats: .m3u8, direct .ts, .mpd and other http streams.
-    const MASTER_STREAMS = [
-        // News & Hindi Entertainment - VLC compatible
-        { name: "🇮🇳 Aaj Tak HD", group: "Hindi News", url: "https://bighls.akamaized.net/aajtak/aajtak_master.m3u8", logo: "https://i.imgur.com/K6XJpCx.png", type: "free" },
-        { name: "🇮🇳 Republic TV", group: "Hindi News", url: "https://d2e0b2qj7qf4q2.cloudfront.net/republic/republic.m3u8", logo: "https://i.imgur.com/pXGjZQ4.png", type: "free" },
-        { name: "🎬 Colors TV", group: "Entertainment", url: "https://feeds.intoday.in/aajtak/api/media//news_video/ab7e3b1b-7b0a-4c2a-8c2b-7b0a4c2a8c2b/playlist.m3u8", logo: "", type: "free" },
-        { name: "📺 Zee News", group: "Hindi News", url: "https://zee5live.akamaized.net/zee5/live/zee5/zee5_hin_1080p/index.m3u8", logo: "", type: "free" },
-        { name: "🎞️ Star Plus", group: "Entertainment", url: "https://bighls.akamaized.net/starplus/starplus.m3u8", logo: "", type: "free" },
-        { name: "🎵 MTV Beats", group: "Music", url: "https://mtvbeatslive.akamaized.net/hls/live/2025854/mtvbeats/master.m3u8", logo: "", type: "free" },
-        { name: "⚽ Sports 18", group: "Sports", url: "https://live.sports18.com/hls/sports18.m3u8", logo: "", type: "paid" },
-        { name: "🏏 Star Sports 1 Hindi", group: "Sports", url: "https://linearjitp-pa.googleapis.com/v1/playback/star-sports-1-hindi/stream.m3u8", logo: "", type: "vip" },
-        { name: "🎥 Sony SAB", group: "Entertainment", url: "https://sonysab.akamaized.net/sab/sab_master.m3u8", logo: "", type: "free" },
-        { name: "📡 DD National", group: "National", url: "https://ddoowqw0q6s2y.cloudfront.net/ddnational/ddnational.m3u8", logo: "", type: "free" },
-        { name: "📰 NDTV India", group: "Hindi News", url: "https://ndtv24x7live.akamaized.net/hls/live/2040330/ndtv24x7/master.m3u8", logo: "", type: "free" },
-        { name: "🎶 9XM", group: "Music", url: "https://9xm.akamaized.net/9xm/9xm_master.m3u8", logo: "", type: "free" },
-        { name: "🍿 Cinema VIP", group: "Movies", url: "https://mfilmslive.akamaized.net/cinema/cinema_hd.m3u8", logo: "", type: "vip" },
-        { name: "🌍 Discovery Channel", group: "Infotainment", url: "https://discoverylive.akamaized.net/discovery/discovery.m3u8", logo: "", type: "paid" }
-    ];
-
-    let channels = [];
+    // ---------- MASTER STREAM LIST - COMPLETELY EMPTY (सभी चैनल हटा दिए गए) ----------
+    let channels = [];  // खाली ऐरे - कोई भी डिफॉल्ट चैनल नहीं
+    
     let currentHls = null;
     const video = document.getElementById('videoPlayer');
     const statusOverlay = document.getElementById('statusOverlay');
@@ -560,14 +588,19 @@
         document.documentElement.setAttribute('data-theme', saved);
     })();
 
-    // ----- Load initial streams (from master + fallback firestore) -----
+    // Guide for adding channels (user education)
+    window.showAddChannelGuide = function() {
+        alert("📺 चैनल जोड़ने का तरीका:\n\n1. Firebase Console में जाएं\n2. 'channels' collection बनाएं\n3. हर चैनल के लिए document जोड़ें:\n   - name: चैनल का नाम\n   - url: VLC compatible स्ट्रीम URL (.m3u8, .ts, .mpd, etc)\n   - category: श्रेणी (जैसे News, Entertainment)\n   - type: free/paid/vip\n   - logo: (optional) लोगो URL\n\nया फिर आप सीधे कोड में MASTER_STREAMS ऐरे में चैनल जोड़ सकते हैं।\n\nTelegram पर संपर्क करें: @DPBHAI";
+    };
+
+    // ----- Load channels ONLY from Firestore (no default channels) -----
     async function loadChannels() {
-        // First: built-in VLC-ready streams
-        channels = [...MASTER_STREAMS];
+        // Initialize empty array - सभी पुराने चैनल हटा दिए गए
+        channels = [];
         
-        // Try to load additional channels from Firestore to enrich playlist
+        // Try to load additional channels from Firestore only (master list is empty)
         try {
-            const snap = await db.collection('channels').limit(30).get();
+            const snap = await db.collection('channels').limit(100).get();
             snap.forEach(doc => {
                 const ch = doc.data();
                 if (ch && ch.url && ch.name) {
@@ -584,15 +617,65 @@
                     }
                 }
             });
-        } catch(e) { /* silent fail, keep master list */ }
+        } catch(e) {
+            console.warn("Firestore load error:", e);
+            // silent fail, keep empty list
+        }
         
-        // If still empty? fallback to master again
-        if (channels.length === 0) channels = [...MASTER_STREAMS];
+        // If still empty, show empty state
+        if (channels.length === 0) {
+            renderEmptyState();
+        } else {
+            renderByCategory(channels);
+        }
         
-        renderByCategory(channels);
+        // Update meta info
+        if (channels.length === 0) {
+            videoMeta.textContent = '0 चैनल • अपने स्ट्रीम जोड़ें';
+        } else {
+            videoMeta.textContent = channels.length + ' चैनल • VLC कम्पैटिबल';
+        }
     }
 
+    function renderEmptyState() {
+        allCategories.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">📭</div>
+                <h3>कोई चैनल नहीं मिला</h3>
+                <p>सभी डिफॉल्ट चैनल हटा दिए गए हैं। अब आप अपनी खुद की स्ट्रीम जोड़ सकते हैं।</p>
+                <button class="add-btn" onclick="showAddChannelGuide()">➕ नया चैनल कैसे जोड़ें?</button>
+                <button class="add-btn" style="background: var(--card); color: var(--text); border: 1px solid var(--border); margin-top: 10px;" onclick="showSampleChannelCreator()">📝 सैंपल चैनल टेम्पलेट</button>
+            </div>
+        `;
+    }
+
+    // Helper to show sample channel adder (for testing)
+    window.showSampleChannelCreator = function() {
+        const sampleUrl = prompt("🔗 एक सैंपल VLC स्ट्रीम URL डालें (उदाहरण: https://example.com/stream.m3u8)\n\nनोट: यह सिर्फ लोकल टेस्ट के लिए है। असल चैनल Firestore में जोड़ें।", "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8");
+        if (sampleUrl && sampleUrl.trim()) {
+            const sampleName = prompt("📺 चैनल का नाम दें:", "सैंपल चैनल");
+            if (sampleName) {
+                // Add locally for testing
+                channels.push({
+                    name: sampleName,
+                    group: "टेस्ट चैनल",
+                    url: sampleUrl,
+                    logo: "",
+                    type: "free"
+                });
+                renderByCategory(channels);
+                videoMeta.textContent = channels.length + ' चैनल • VLC कम्पैटिबल (टेस्ट मोड)';
+                alert("✅ सैंपल चैनल जोड़ा गया! अब आप इसका टेस्ट कर सकते हैं।\nध्यान दें: यह चैनल केवल आपके ब्राउज़र में सेव हुआ है।");
+            }
+        }
+    };
+
     function renderByCategory(list) {
+        if (!list || list.length === 0) {
+            renderEmptyState();
+            return;
+        }
+        
         const cats = {};
         list.forEach(ch => {
             const cat = ch.group || "Uncategorized";
@@ -604,7 +687,8 @@
         for (const [cat, chs] of Object.entries(cats)) {
             html += `<div class="cat-section"><div class="cat-header"><span class="cat-dot"></span> ${cat} <span class="cat-count">${chs.length}</span></div><div class="channel-row">`;
             chs.forEach((ch, idx) => {
-                const globalIdx = channels.findIndex(c => c.url === ch.url && c.name === ch.name);
+                // Find global index
+                const globalIdx = list.findIndex(c => c.url === ch.url && c.name === ch.name);
                 const type = ch.type || 'free';
                 let badgeClass = 'badge-free';
                 let badgeText = 'FREE';
@@ -627,7 +711,6 @@
             html += `</div></div>`;
         }
         allCategories.innerHTML = html || '<p style="text-align:center;padding:30px;">⚡ कोई चैनल नहीं मिला</p>';
-        videoMeta.textContent = list.length + ' चैनल • VLC कम्पैटिबल';
     }
 
     function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, function(m){if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
@@ -635,8 +718,17 @@
     // Search filter
     searchInput.addEventListener('input', () => {
         const q = searchInput.value.toLowerCase();
+        if (!q.trim()) {
+            if (channels.length === 0) renderEmptyState();
+            else renderByCategory(channels);
+            return;
+        }
         const filtered = channels.filter(ch => ch.name.toLowerCase().includes(q) || (ch.group && ch.group.toLowerCase().includes(q)));
-        renderByCategory(filtered);
+        if (filtered.length === 0) {
+            allCategories.innerHTML = `<div class="empty-state" style="padding:40px;"><p>🔍 "${q}" से कोई चैनल नहीं मिला</p></div>`;
+        } else {
+            renderByCategory(filtered);
+        }
     });
 
     // ----- membership check for paid/vip -----
@@ -688,10 +780,9 @@
         });
     }
 
-    // Core play function with VLC compatibility (HLS + native)
-    async function playChannelByUrl(url, name, category, idx) {
+    // Core play function with VLC compatibility
+    window.playChannelByUrl = async function(url, name, category, idx) {
         if (!url) return;
-        // Find original channel object to detect type
         const channelObj = channels.find(c => c.url === url) || { type: 'free', name: name };
         
         if (channelObj.type === 'paid' || channelObj.type === 'vip') {
@@ -715,7 +806,7 @@
         // Destroy old HLS
         if (currentHls) { currentHls.destroy(); currentHls = null; }
         
-        // For HLS streams -> use HLS.js else native (also mp4/ts etc works natively)
+        // For HLS streams -> use HLS.js else native
         if (Hls.isSupported() && (url.includes('.m3u8') || url.includes('m3u8'))) {
             currentHls = new Hls({ debug: false, enableWorker: true });
             currentHls.loadSource(url);
@@ -731,7 +822,6 @@
                 }
             });
         } else {
-            // For direct .ts, .mp4, .mkv or any VLC-friendly link (including HTTP streams)
             video.src = url;
             video.load();
             video.play().catch(err => {
@@ -740,21 +830,12 @@
             });
         }
         
-        // Additional fallback: if video hangs, show reconnection hint
         video.onerror = () => {
             statusOverlay.style.display = 'block';
             statusOverlay.innerHTML = '<span>📡 लिंक काम नहीं कर रहा, दूसरा चैनल चुनें</span>';
             video.style.display = 'none';
         };
-    }
-    
-    // Legacy support for onclick via index (backward)
-    async function playChannel(index) {
-        if (index >= 0 && channels[index]) {
-            const ch = channels[index];
-            await playChannelByUrl(ch.url, ch.name, ch.group, index);
-        }
-    }
+    };
     
     // Like & share feature
     function toggleLike() {
@@ -780,7 +861,7 @@
         } else document.getElementById('likeCount').textContent = '0';
     })();
     
-    // Initialize the full player
+    // Initialize the player with empty channels
     loadChannels();
 </script>
 </body>
