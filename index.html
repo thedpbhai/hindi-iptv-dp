@@ -4,237 +4,466 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>DP BHAI TV 👑 प्रीमियम IPTV - VLC Streams</title>
+    <meta name="description" content="DP BHAI TV - प्रीमियम IPTV स्ट्रीमिंग प्लेटफॉर्म, VLC कम्पैटिबल चैनल्स, हिंदी एंटरटेनमेंट, न्यूज़ और स्पोर्ट्स">
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👑</text></svg>">
     <!-- HLS.js for modern streaming -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        :root {
+            /* Dark Theme (Default) */
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #111118;
+            --bg-tertiary: #1a1a25;
+            --bg-card: #14141f;
+            --bg-card-hover: #1e1e2e;
+            --bg-glass: rgba(20, 20, 35, 0.8);
+            --border-color: #252535;
+            --border-light: rgba(255, 255, 255, 0.08);
+            --text-primary: #f0f0f5;
+            --text-secondary: #a0a0b5;
+            --text-muted: #6b6b80;
+            --accent: #ff1744;
+            --accent-secondary: #ff6d00;
+            --accent-glow: rgba(255, 23, 68, 0.4);
+            --gold: #ffd600;
+            --gold-dark: #ffab00;
+            --gold-glow: rgba(255, 214, 0, 0.3);
+            --success: #00e676;
+            --success-glow: rgba(0, 230, 118, 0.3);
+            --danger: #ff1744;
+            --gradient-accent: linear-gradient(135deg, #ff1744 0%, #ff6d00 100%);
+            --gradient-gold: linear-gradient(135deg, #ffd600 0%, #ffab00 100%);
+            --gradient-dark: linear-gradient(180deg, #0a0a0f 0%, #1a1a25 100%);
+            --gradient-card: linear-gradient(145deg, #1a1a28 0%, #141420 100%);
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.6);
+            --shadow-glow: 0 0 30px rgba(255, 23, 68, 0.3);
+            --radius-xs: 8px;
+            --radius-sm: 12px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --radius-xl: 32px;
+            --radius-full: 50px;
+            --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-bounce: 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            --safe-bottom: env(safe-area-inset-bottom, 16px);
+            --font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #f5f5fa;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #eef0f5;
+            --bg-card: #ffffff;
+            --bg-card-hover: #f8f9ff;
+            --bg-glass: rgba(255, 255, 255, 0.85);
+            --border-color: #e2e5ee;
+            --border-light: rgba(0, 0, 0, 0.06);
+            --text-primary: #1a1a2e;
+            --text-secondary: #5a5a75;
+            --text-muted: #8e8ea5;
+            --accent: #e6003a;
+            --accent-secondary: #ff6d00;
+            --accent-glow: rgba(230, 0, 58, 0.2);
+            --gold: #cc9900;
+            --gold-dark: #b38600;
+            --gold-glow: rgba(204, 153, 0, 0.2);
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.12);
+            --shadow-glow: 0 0 25px rgba(230, 0, 58, 0.15);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        :root {
-            --bg: #000000;
-            --surface: #0a0a0a;
-            --card: #111111;
-            --border: #1f1f1f;
-            --text: #ffffff;
-            --text-secondary: #999999;
-            --accent: #ff0040;
-            --accent-glow: rgba(255,0,64,0.3);
-            --gold: #ffd700;
-            --gold-glow: rgba(255,215,0,0.2);
-            --gradient-1: linear-gradient(135deg, #ff0040, #ff6b00);
-            --gradient-2: linear-gradient(135deg, #1a1a2e, #0f0f23);
-            --glass: rgba(255,255,255,0.03);
-            --glass-border: rgba(255,255,255,0.06);
-            --shadow: 0 20px 60px rgba(0,0,0,0.5);
-            --radius: 16px;
-            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --safe-bottom: env(safe-area-inset-bottom, 0px);
-        }
-
-        [data-theme="light"] {
-            --bg: #f5f5f7;
-            --surface: #ffffff;
-            --card: #ffffff;
-            --border: #e0e0e0;
-            --text: #111111;
-            --text-secondary: #666666;
-            --accent: #e6003a;
-            --accent-glow: rgba(230,0,58,0.15);
-            --gold: #cc9900;
-            --gold-glow: rgba(204,153,0,0.15);
-            --gradient-1: linear-gradient(135deg, #e6003a, #ff6b00);
-            --gradient-2: linear-gradient(135deg, #f0f0f5, #e8e8f0);
-            --glass: rgba(0,0,0,0.02);
-            --glass-border: rgba(0,0,0,0.06);
-            --shadow: 0 20px 60px rgba(0,0,0,0.08);
+        html {
+            scroll-behavior: smooth;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            font-family: 'Inter', 'Segoe UI', sans-serif;
-            background: var(--bg);
-            color: var(--text);
+            font-family: var(--font-family);
+            background: var(--bg-primary);
+            background-image: 
+                radial-gradient(ellipse at 20% 0%, rgba(255, 23, 68, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 100%, rgba(255, 214, 0, 0.05) 0%, transparent 50%);
+            color: var(--text-primary);
             min-height: 100vh;
-            transition: background var(--transition), color var(--transition);
+            min-height: 100dvh;
+            transition: background var(--transition-smooth), color var(--transition-smooth);
             -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
             overflow-x: hidden;
             padding-bottom: var(--safe-bottom);
+            line-height: 1.5;
+            letter-spacing: -0.01em;
         }
 
-        ::-webkit-scrollbar { width: 3px; height: 3px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 10px;
+            transition: background var(--transition-fast);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
 
+        /* Firefox Scrollbar */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: var(--border-color) transparent;
+        }
+
+        /* Loading Animation */
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes glowPulse {
+            0%, 100% {
+                box-shadow: 0 0 20px var(--accent-glow), 0 0 40px rgba(255, 23, 68, 0.1);
+            }
+            50% {
+                box-shadow: 0 0 30px var(--accent-glow), 0 0 60px rgba(255, 23, 68, 0.2);
+            }
+        }
+
+        @keyframes liveDot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.7); }
+        }
+
+        /* Top Navigation Bar */
         .topbar {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 10px 16px;
-            background: var(--glass);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            border-bottom: 1px solid var(--glass-border);
+            padding: 12px 20px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            border-bottom: 1px solid var(--border-light);
             position: sticky;
             top: 0;
             z-index: 1000;
-            gap: 10px;
+            gap: 12px;
             flex-wrap: wrap;
+            transition: all var(--transition-smooth);
+            box-shadow: var(--shadow-sm);
+        }
+
+        @supports not (backdrop-filter: blur(40px)) {
+            .topbar {
+                background: var(--bg-secondary);
+                opacity: 0.98;
+            }
         }
 
         .logo-group {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             cursor: pointer;
+            transition: transform var(--transition-bounce);
+            flex-shrink: 0;
+        }
+
+        .logo-group:hover {
+            transform: scale(1.02);
+        }
+
+        .logo-group:active {
+            transform: scale(0.98);
         }
 
         .logo-icon {
-            width: 34px;
-            height: 34px;
-            background: var(--gradient-1);
-            border-radius: 10px;
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-accent);
+            border-radius: var(--radius-sm);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1rem;
-            font-weight: 900;
+            font-size: 1.3rem;
             color: #fff;
-            box-shadow: 0 6px 20px var(--accent-glow);
+            box-shadow: var(--shadow-glow);
+            animation: glowPulse 3s ease-in-out infinite;
+            position: relative;
+            flex-shrink: 0;
         }
 
         .logo-text {
-            font-size: 1.2rem;
+            font-size: 1.25rem;
             font-weight: 800;
             letter-spacing: -0.5px;
+            white-space: nowrap;
+            user-select: none;
         }
 
-        .logo-text .accent { color: var(--accent); }
-        .premium {
-            font-size: 0.45rem;
-            background: var(--gradient-1);
-            color: #fff;
-            padding: 2px 5px;
-            border-radius: 3px;
+        .logo-text .accent {
+            color: var(--accent);
+            position: relative;
+        }
+
+        .premium-badge {
+            font-size: 0.5rem;
+            font-weight: 700;
+            background: var(--gradient-gold);
+            color: #000;
+            padding: 3px 7px;
+            border-radius: var(--radius-xs);
             vertical-align: super;
-            margin-left: 2px;
-            letter-spacing: 1px;
+            margin-left: 4px;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            box-shadow: 0 2px 8px var(--gold-glow);
         }
 
         .search-wrapper {
             flex: 1;
-            min-width: 140px;
-            max-width: 100%;
+            min-width: 160px;
+            max-width: 380px;
             position: relative;
         }
 
         .search-wrapper input {
             width: 100%;
-            padding: 9px 38px 9px 14px;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 25px;
-            color: var(--text);
-            font-size: 0.82rem;
+            padding: 10px 42px 10px 16px;
+            background: var(--bg-card);
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-full);
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            font-weight: 500;
             outline: none;
-            transition: var(--transition);
-            font-family: 'Inter', sans-serif;
+            transition: all var(--transition-smooth);
+            font-family: var(--font-family);
+            letter-spacing: -0.2px;
+        }
+
+        .search-wrapper input::placeholder {
+            color: var(--text-muted);
+            font-weight: 400;
         }
 
         .search-wrapper input:focus {
             border-color: var(--accent);
-            box-shadow: 0 0 0 3px var(--accent-glow);
+            box-shadow: 0 0 0 4px var(--accent-glow);
+            background: var(--bg-card-hover);
         }
 
-        .search-wrapper .s-icon {
+        .search-wrapper .search-icon {
             position: absolute;
-            right: 12px;
+            right: 14px;
             top: 50%;
             transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
+            transition: color var(--transition-fast);
             font-size: 0.9rem;
-            opacity: 0.5;
+        }
+
+        .search-wrapper input:focus ~ .search-icon {
+            color: var(--accent);
         }
 
         .action-group {
             display: flex;
-            gap: 5px;
+            gap: 8px;
             align-items: center;
+            flex-shrink: 0;
         }
 
         .btn {
-            padding: 7px 12px;
-            border-radius: 20px;
-            font-size: 0.7rem;
+            padding: 9px 16px;
+            border-radius: var(--radius-full);
+            font-size: 0.8rem;
             font-weight: 600;
             cursor: pointer;
             text-decoration: none;
             border: none;
-            transition: var(--transition);
-            font-family: 'Inter', sans-serif;
+            transition: all var(--transition-bounce);
+            font-family: var(--font-family);
             white-space: nowrap;
-            display: flex;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            letter-spacing: -0.2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:active::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-icon {
+            width: 38px;
+            height: 38px;
+            padding: 0;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 0.95rem;
+            flex-shrink: 0;
+        }
+
+        .btn-ghost {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1.5px solid var(--border-color);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-ghost:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--text-muted);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-ghost:active {
+            transform: translateY(0) scale(0.97);
+        }
+
+        .btn-accent {
+            background: var(--gradient-accent);
+            color: #fff;
+            box-shadow: var(--shadow-glow);
+            font-weight: 700;
+        }
+
+        .btn-accent:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px var(--accent-glow);
+        }
+
+        .btn-accent:active {
+            transform: translateY(0) scale(0.97);
+        }
+
+        .live-indicator {
+            display: inline-flex;
             align-items: center;
             gap: 4px;
         }
 
-        .btn-icon {
-            width: 30px;
-            height: 30px;
-            padding: 0;
-            justify-content: center;
+        .live-dot {
+            width: 7px;
+            height: 7px;
+            background: #fff;
             border-radius: 50%;
-            font-size: 0.85rem;
-        }
-
-        .btn-ghost {
-            background: var(--card);
-            color: var(--text);
-            border: 1px solid var(--border);
-        }
-
-        .btn-ghost:hover { background: var(--border); }
-
-        .btn-accent {
-            background: var(--gradient-1);
-            color: #fff;
-            box-shadow: 0 6px 20px var(--accent-glow);
-            animation: accentPulse 3s infinite;
-        }
-
-        @keyframes accentPulse {
-            0%, 100% { box-shadow: 0 6px 20px var(--accent-glow); }
-            50% { box-shadow: 0 10px 30px rgba(255,0,64,0.5); }
+            animation: liveDot 1.5s ease-in-out infinite;
         }
 
         .btn-gold {
-            background: var(--gold);
+            background: var(--gradient-gold);
             color: #000;
             font-weight: 700;
-            box-shadow: 0 6px 20px var(--gold-glow);
+            box-shadow: 0 4px 20px var(--gold-glow);
         }
 
+        .btn-gold:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px var(--gold-glow);
+        }
+
+        .btn-gold:active {
+            transform: translateY(0) scale(0.97);
+        }
+
+        /* Main Content Area */
         .main-content {
             width: 100%;
-            max-width: 100%;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 12px 12px 20px;
+            padding: 20px 20px 30px;
+            animation: fadeInScale 0.5s ease-out;
         }
 
+        /* Player Card */
         .player-card {
             background: #000;
-            border-radius: 12px;
+            border-radius: var(--radius-lg);
             overflow: hidden;
             width: 100%;
-            aspect-ratio: 16/9;
+            aspect-ratio: 16 / 9;
+            max-height: 75vh;
             position: relative;
-            margin-bottom: 12px;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            border: 2px solid var(--border-color);
+            box-shadow: var(--shadow-lg);
+            transition: all var(--transition-smooth);
+        }
+
+        .player-card:has(video[style*="display: block"]) {
+            border-color: var(--accent);
+            box-shadow: var(--shadow-lg), 0 0 40px rgba(255, 23, 68, 0.1);
         }
 
         video {
@@ -242,6 +471,7 @@
             height: 100%;
             object-fit: contain;
             display: block;
+            background: #000;
         }
 
         #statusOverlay {
@@ -250,525 +480,1178 @@
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
-            opacity: 0.7;
-            font-size: 0.9rem;
-            color: var(--text-secondary);
             pointer-events: none;
+            transition: all var(--transition-smooth);
+            z-index: 5;
         }
 
+        #statusOverlay .status-icon {
+            font-size: 3.5rem;
+            margin-bottom: 12px;
+            display: block;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        #statusOverlay .status-text {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            letter-spacing: 0.2px;
+        }
+
+        /* Info Bar */
         .info-bar {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 18px;
+            padding: 16px 4px;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 24px;
             flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .info-bar .info-left h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
             gap: 8px;
         }
 
-        .info-bar h2 {
-            font-size: 1rem;
-            font-weight: 700;
+        .now-playing-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            box-shadow: 0 0 12px var(--success-glow);
+            animation: liveDot 2s ease-in-out infinite;
         }
 
         .info-bar .meta {
-            font-size: 0.7rem;
+            font-size: 0.78rem;
             color: var(--text-secondary);
-            margin-top: 2px;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+
+        .meta-divider {
+            width: 3px;
+            height: 3px;
+            background: var(--text-muted);
+            border-radius: 50%;
         }
 
         .chip-row {
             display: flex;
-            gap: 6px;
+            gap: 8px;
+            flex-shrink: 0;
         }
 
         .chip {
-            background: var(--card);
-            border: 1px solid var(--border);
-            padding: 6px 12px;
-            border-radius: 16px;
-            font-size: 0.7rem;
+            background: var(--bg-card);
+            border: 1.5px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: var(--radius-full);
+            font-size: 0.78rem;
             cursor: pointer;
-            transition: var(--transition);
-            font-weight: 500;
+            transition: all var(--transition-bounce);
+            font-weight: 600;
             color: var(--text-secondary);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: var(--font-family);
+        }
+
+        .chip:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--text-muted);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .chip:active {
+            transform: scale(0.95);
         }
 
         .chip.liked {
             background: var(--accent);
             color: #fff;
             border-color: var(--accent);
+            box-shadow: 0 4px 16px var(--accent-glow);
         }
 
-        .cat-section {
-            margin-bottom: 24px;
+        .chip.liked i {
+            animation: fadeInScale 0.3s ease-out;
         }
+
+        /* Category Sections */
+        .cat-section {
+            margin-bottom: 32px;
+            animation: slideUp 0.5s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .cat-section:nth-child(1) { animation-delay: 0.05s; }
+        .cat-section:nth-child(2) { animation-delay: 0.1s; }
+        .cat-section:nth-child(3) { animation-delay: 0.15s; }
+        .cat-section:nth-child(4) { animation-delay: 0.2s; }
+        .cat-section:nth-child(5) { animation-delay: 0.25s; }
 
         .cat-header {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 0.9rem;
+            gap: 10px;
+            font-size: 1rem;
             font-weight: 700;
-            margin-bottom: 12px;
+            margin-bottom: 16px;
+            letter-spacing: -0.3px;
         }
 
         .cat-dot {
-            width: 6px;
-            height: 6px;
+            width: 10px;
+            height: 10px;
             background: var(--accent);
             border-radius: 50%;
-            box-shadow: 0 0 8px var(--accent);
+            box-shadow: 0 0 12px var(--accent);
+            flex-shrink: 0;
         }
 
         .cat-count {
-            font-size: 0.65rem;
-            color: var(--text-secondary);
-            font-weight: 500;
-            background: var(--card);
-            padding: 2px 8px;
-            border-radius: 10px;
-            border: 1px solid var(--border);
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            background: var(--bg-card);
+            padding: 3px 10px;
+            border-radius: var(--radius-full);
+            border: 1.5px solid var(--border-color);
+            letter-spacing: 0.2px;
         }
 
+        /* Channel Horizontal Scroll */
         .channel-row {
             display: flex;
-            gap: 10px;
+            gap: 14px;
             overflow-x: auto;
-            padding-bottom: 6px;
+            padding: 8px 4px 14px;
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
+            scroll-snap-type: x proximity;
         }
 
         .channel-row::-webkit-scrollbar {
-            height: 3px;
+            height: 5px;
+        }
+
+        .channel-row::-webkit-scrollbar-track {
+            background: transparent;
+            margin: 0 4px;
         }
 
         .channel-row::-webkit-scrollbar-thumb {
-            background: var(--border);
-            border-radius: 3px;
+            background: var(--border-color);
+            border-radius: 10px;
         }
 
+        .channel-row::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+
+        /* Channel Card */
         .ch-card {
-            min-width: 150px;
-            max-width: 170px;
-            background: var(--card);
-            border-radius: 12px;
+            min-width: 170px;
+            max-width: 190px;
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
             overflow: hidden;
             cursor: pointer;
-            transition: var(--transition);
+            transition: all var(--transition-bounce);
             flex-shrink: 0;
-            border: 1px solid var(--border);
+            border: 2px solid var(--border-color);
             position: relative;
-            box-shadow: 0 3px 15px rgba(0,0,0,0.2);
+            box-shadow: var(--shadow-sm);
+            scroll-snap-align: start;
         }
 
-        .ch-card:active { transform: scale(0.96); }
+        .ch-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--text-muted);
+            box-shadow: var(--shadow-md);
+            background: var(--bg-card-hover);
+        }
+
+        .ch-card:active {
+            transform: scale(0.96);
+            transition: transform 0.1s ease;
+        }
 
         .ch-card.active {
-            border-color: var(--gold);
-            box-shadow: 0 0 20px var(--gold-glow);
+            border-color: var(--gold) !important;
+            box-shadow: 0 0 30px var(--gold-glow), var(--shadow-md) !important;
+            animation: glowPulse 2s ease-in-out infinite;
         }
 
+        /* Badge Tags */
         .badge-tag {
             position: absolute;
-            top: 6px;
-            left: 6px;
-            padding: 2px 7px;
-            border-radius: 4px;
-            font-size: 0.5rem;
+            top: 10px;
+            left: 10px;
+            padding: 4px 10px;
+            border-radius: var(--radius-xs);
+            font-size: 0.6rem;
             font-weight: 700;
             z-index: 2;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .badge-free {
+            background: rgba(0, 230, 118, 0.9);
+            color: #000;
+        }
+
+        .badge-paid {
+            background: rgba(255, 23, 68, 0.9);
             color: #fff;
         }
 
-        .badge-free { background: #00cc66; }
-        .badge-paid { background: #ff0040; }
-        .badge-vip { background: #ffd700; color: #000; }
+        .badge-vip {
+            background: linear-gradient(135deg, #ffd600, #ffab00);
+            color: #000;
+            box-shadow: 0 2px 12px rgba(255, 214, 0, 0.4);
+        }
 
+        /* Channel Thumbnail */
         .ch-thumb {
             width: 100%;
-            aspect-ratio: 16/10;
-            background: var(--gradient-2);
+            aspect-ratio: 16 / 10;
+            background: var(--gradient-dark);
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            position: relative;
+        }
+
+        .ch-thumb::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 40%;
+            background: linear-gradient(to top, rgba(0,0,0,0.4), transparent);
+            pointer-events: none;
         }
 
         .ch-thumb img {
             width: 100%;
             height: 100%;
-            object-fit: contain;
-            padding: 8px;
+            object-fit: cover;
+            transition: transform var(--transition-smooth);
         }
 
+        .ch-card:hover .ch-thumb img {
+            transform: scale(1.08);
+        }
+
+        .ch-thumb .placeholder-icon {
+            font-size: 2.5rem;
+            opacity: 0.5;
+            transition: opacity var(--transition-smooth);
+        }
+
+        .ch-card:hover .ch-thumb .placeholder-icon {
+            opacity: 0.8;
+        }
+
+        /* Channel Info */
         .ch-info {
-            padding: 10px;
+            padding: 12px 14px;
         }
 
         .ch-name {
-            font-size: 0.75rem;
-            font-weight: 600;
+            font-size: 0.82rem;
+            font-weight: 700;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            letter-spacing: -0.2px;
+            margin-bottom: 3px;
         }
 
         .ch-cat {
-            font-size: 0.65rem;
-            color: var(--text-secondary);
-            margin-top: 2px;
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            font-weight: 500;
             display: flex;
             align-items: center;
-            gap: 3px;
+            gap: 5px;
+            letter-spacing: 0.1px;
         }
 
         .ch-cat::before {
             content: '';
-            width: 4px;
-            height: 4px;
-            background: #00cc66;
+            width: 5px;
+            height: 5px;
+            background: var(--success);
             border-radius: 50%;
-            box-shadow: 0 0 4px #00cc66;
+            box-shadow: 0 0 6px var(--success-glow);
+            flex-shrink: 0;
         }
 
+        /* Premium Footer */
         .footer-premium {
             text-align: center;
-            padding: 16px;
+            padding: 24px 20px;
             color: var(--text-secondary);
-            font-size: 0.7rem;
-            border-top: 1px solid var(--border);
-            margin-top: 30px;
-            background: var(--glass);
+            font-size: 0.78rem;
+            border-top: 2px solid var(--border-color);
+            margin-top: 40px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            letter-spacing: 0.1px;
+            line-height: 1.8;
+        }
+
+        .footer-premium strong {
+            color: var(--text-primary);
+            font-weight: 700;
         }
 
         .footer-premium a {
             color: var(--accent);
             text-decoration: none;
-            font-weight: 600;
+            font-weight: 700;
+            transition: color var(--transition-fast);
+            position: relative;
         }
 
+        .footer-premium a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 1.5px;
+            background: var(--accent);
+            transform: scaleX(0);
+            transition: transform var(--transition-smooth);
+            transform-origin: right;
+        }
+
+        .footer-premium a:hover::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        /* Status Messages */
         .status-msg {
-            animation: fadeIn 0.3s;
+            animation: slideUp 0.4s ease-out;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            padding: 12px 24px;
+            border-radius: var(--radius-full);
+            border: 1.5px solid var(--border-color);
+            font-size: 0.85rem;
+            font-weight: 600;
+            z-index: 9999;
+            box-shadow: var(--shadow-lg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transition: transform var(--transition-bounce);
+            pointer-events: none;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast.success {
+            border-color: var(--success);
+            box-shadow: 0 4px 20px var(--success-glow);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .topbar {
+                padding: 10px 14px;
+                gap: 10px;
+            }
+
+            .logo-icon {
+                width: 34px;
+                height: 34px;
+                font-size: 1.1rem;
+                border-radius: 10px;
+            }
+
+            .logo-text {
+                font-size: 1.05rem;
+            }
+
+            .search-wrapper {
+                min-width: 120px;
+                max-width: 100%;
+                order: 10;
+                flex-basis: 100%;
+            }
+
+            .btn {
+                padding: 7px 12px;
+                font-size: 0.72rem;
+            }
+
+            .btn-icon {
+                width: 34px;
+                height: 34px;
+                font-size: 0.85rem;
+            }
+
+            .main-content {
+                padding: 14px 12px 24px;
+            }
+
+            .player-card {
+                border-radius: var(--radius-md);
+                margin-bottom: 16px;
+            }
+
+            .ch-card {
+                min-width: 140px;
+                max-width: 155px;
+                border-radius: var(--radius-sm);
+            }
+
+            .ch-info {
+                padding: 10px;
+            }
+
+            .ch-name {
+                font-size: 0.75rem;
+            }
+
+            .ch-cat {
+                font-size: 0.65rem;
+            }
+
+            .info-bar h2 {
+                font-size: 1rem;
+            }
+
+            .cat-header {
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .topbar {
+                padding: 8px 10px;
+            }
+
+            .logo-text {
+                font-size: 0.95rem;
+            }
+
+            .logo-icon {
+                width: 30px;
+                height: 30px;
+                font-size: 1rem;
+                border-radius: 8px;
+            }
+
+            .action-group {
+                gap: 4px;
+            }
+
+            .btn-icon {
+                width: 30px;
+                height: 30px;
+                font-size: 0.8rem;
+            }
+
+            .btn {
+                padding: 6px 10px;
+                font-size: 0.7rem;
+            }
+
+            .ch-card {
+                min-width: 120px;
+                max-width: 135px;
+            }
+
+            .ch-info {
+                padding: 8px;
+            }
+
+            .ch-name {
+                font-size: 0.7rem;
+            }
+
+            .badge-tag {
+                font-size: 0.55rem;
+                padding: 3px 7px;
+                top: 6px;
+                left: 6px;
+            }
+
+            .player-card {
+                border-radius: var(--radius-sm);
+                border-width: 1.5px;
+            }
         }
     </style>
 </head>
 <body>
 
-<header class="topbar">
-    <div class="logo-group" onclick="location.reload()">
-        <div class="logo-icon">👑</div>
-        <div class="logo-text">DP<span class="accent">BHAI</span><span class="premium">VLC</span></div>
-    </div>
-    <div class="search-wrapper">
-        <input type="text" id="searchInput" placeholder="चैनल खोजें...">
-        <span class="s-icon">🔍</span>
-    </div>
-    <div class="action-group">
-        <button class="btn btn-icon btn-ghost" onclick="toggleTheme()">🌓</button>
-        <button class="btn btn-icon btn-ghost" onclick="location.reload()">🔄</button>
-        <a href="#" class="btn btn-accent">LIVE</a>
-        <a href="https://t.me/DPBHAITV" class="btn btn-gold">👑 VIP</a>
-    </div>
-</header>
+    <!-- Toast Container -->
+    <div class="toast" id="toast"></div>
 
-<main class="main-content">
-    <div class="player-card">
-        <video id="videoPlayer" controls style="display:none;" playsinline webkit-playsinline></video>
-        <div id="statusOverlay"><span style="font-size:2rem;">📡</span><br>चैनल चुनें (VLC compatible streams)</div>
-    </div>
-    <div class="info-bar">
-        <div><h2 id="videoTitle">👑 DP BHAI TV PRO</h2><p class="meta" id="videoMeta">प्रीमियम स्ट्रीम्स • VLC सपोर्ट</p></div>
-        <div class="chip-row">
-            <button class="chip" id="likeBtn" onclick="toggleLike()">👍 <span id="likeCount">0</span></button>
-            <button class="chip" onclick="shareSite()">📤 शेयर</button>
+    <!-- Header -->
+    <header class="topbar" role="banner">
+        <div class="logo-group" onclick="location.reload()" title="DP BHAI TV - होम" aria-label="DP BHAI TV Home">
+            <div class="logo-icon" aria-hidden="true">👑</div>
+            <div class="logo-text">
+                DP<span class="accent">BHAI</span>
+                <span class="premium-badge">VLC</span>
+            </div>
         </div>
-    </div>
-    <div id="allCategories"></div>
-</main>
 
-<footer class="footer-premium">
-    👑 <strong>DP BHAI TV VIP</strong> | सभी स्ट्रीम्स VLC / MPV / FFmpeg कम्पैटिबल | <a href="https://t.me/DPBHAITV" target="_blank">Telegram</a> | © 2026
-</footer>
+        <div class="search-wrapper">
+            <input 
+                type="text" 
+                id="searchInput" 
+                placeholder="चैनल खोजें... (नाम या कैटेगरी)" 
+                aria-label="Search channels"
+                autocomplete="off"
+            >
+            <span class="search-icon" aria-hidden="true">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </span>
+        </div>
 
-<script>
-    // ---------- FIREBASE INIT ----------
-    const firebaseConfig = {
-        apiKey: "AIzaSyDy4pxl68z8N7yDZfKBpZbMkfcGxtBu1JQ",
-        authDomain: "dpbhai-tv.firebaseapp.com",
-        projectId: "dpbhai-tv",
-        storageBucket: "dpbhai-tv.firebasestorage.app",
-        messagingSenderId: "361265848465",
-        appId: "1:361265848465:web:bb2c78a3cbded7180d1f30"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+        <div class="action-group">
+            <button 
+                class="btn btn-icon btn-ghost" 
+                onclick="toggleTheme()" 
+                title="थीम बदलें"
+                aria-label="Toggle theme"
+            >
+                <i class="fa-solid fa-circle-half-stroke"></i>
+            </button>
+            <button 
+                class="btn btn-icon btn-ghost" 
+                onclick="location.reload()" 
+                title="रीफ्रेश करें"
+                aria-label="Refresh page"
+            >
+                <i class="fa-solid fa-arrows-rotate"></i>
+            </button>
+            <a href="#" class="btn btn-accent" aria-label="Live streaming">
+                <span class="live-indicator">
+                    <span class="live-dot" aria-hidden="true"></span>
+                    LIVE
+                </span>
+            </a>
+            <a 
+                href="https://t.me/DPBHAITV" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                class="btn btn-gold" 
+                aria-label="Join VIP Telegram"
+            >
+                <i class="fa-solid fa-crown"></i> VIP
+            </a>
+        </div>
+    </header>
 
-    // ---------- MASTER STREAM LIST (VLC ready) ----------
-    // This includes various working streams that are compatible with VLC, MPV, FFplay
-    // Mixed formats: .m3u8, direct .ts, .mpd and other http streams.
-    const MASTER_STREAMS = [
-        // News & Hindi Entertainment - VLC compatible
-        { }
-    ];
+    <!-- Main Content -->
+    <main class="main-content" role="main">
+        <!-- Player Section -->
+        <div class="player-card" aria-label="Video Player">
+            <video 
+                id="videoPlayer" 
+                controls 
+                style="display:none;" 
+                playsinline 
+                webkit-playsinline
+                aria-label="Video stream player"
+                preload="metadata"
+            ></video>
+            <div id="statusOverlay">
+                <span class="status-icon" aria-hidden="true">📡</span>
+                <span class="status-text">चैनल चुनें — VLC Compatible Streams</span>
+            </div>
+        </div>
 
-    let channels = [];
-    let currentHls = null;
-    const video = document.getElementById('videoPlayer');
-    const statusOverlay = document.getElementById('statusOverlay');
-    const allCategories = document.getElementById('allCategories');
-    const videoTitle = document.getElementById('videoTitle');
-    const videoMeta = document.getElementById('videoMeta');
-    const searchInput = document.getElementById('searchInput');
+        <!-- Info Bar -->
+        <div class="info-bar">
+            <div class="info-left">
+                <h2>
+                    <span class="now-playing-dot" aria-hidden="true"></span>
+                    <span id="videoTitle">👑 DP BHAI TV PRO</span>
+                </h2>
+                <p class="meta">
+                    <span id="videoMeta">प्रीमियम स्ट्रीम्स • VLS सपोर्ट</span>
+                </p>
+            </div>
+            <div class="chip-row">
+                <button 
+                    class="chip" 
+                    id="likeBtn" 
+                    onclick="toggleLike()" 
+                    aria-label="Like button"
+                    title="पसंद करें"
+                >
+                    <i class="fa-solid fa-heart"></i>
+                    <span id="likeCount">0</span>
+                </button>
+                <button 
+                    class="chip" 
+                    onclick="shareSite()" 
+                    aria-label="Share button"
+                    title="शेयर करें"
+                >
+                    <i class="fa-solid fa-share-nodes"></i> शेयर
+                </button>
+            </div>
+        </div>
 
-    // User ID
-    if (!localStorage.getItem('userId')) {
-        localStorage.setItem('userId', 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9));
-    }
-    const userId = localStorage.getItem('userId');
+        <!-- Dynamic Categories Container -->
+        <div id="allCategories"></div>
+    </main>
 
-    // ----- Theme handling -----
-    function toggleTheme() {
-        const html = document.documentElement;
-        const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-        html.setAttribute('data-theme', next);
-        localStorage.setItem('theme', next);
-    }
-    (function() {
-        const saved = localStorage.getItem('theme') || 'dark';
-        document.documentElement.setAttribute('data-theme', saved);
-    })();
+    <!-- Footer -->
+    <footer class="footer-premium" role="contentinfo">
+        <p>
+            👑 <strong>DP BHAI TV VIP</strong> &nbsp;|&nbsp; 
+            सभी स्ट्रीम्स <strong>VLC / MPV / FFmpeg</strong> कम्पैटिबल &nbsp;|&nbsp;
+            <a href="https://t.me/DPBHAITV" target="_blank" rel="noopener noreferrer">
+                <i class="fa-brands fa-telegram"></i> Telegram जॉइन करें
+            </a>
+            &nbsp;|&nbsp; © 2026 DP BHAI TV
+        </p>
+    </footer>
 
-    // ----- Load initial streams (from master + fallback firestore) -----
-    async function loadChannels() {
-        // First: built-in VLC-ready streams
-        channels = [...MASTER_STREAMS];
-        
-        // Try to load additional channels from Firestore to enrich playlist
-        try {
-            const snap = await db.collection('channels').limit(30).get();
-            snap.forEach(doc => {
-                const ch = doc.data();
-                if (ch && ch.url && ch.name) {
-                    // avoid duplicates by url
-                    const exists = channels.some(c => c.url === ch.url);
-                    if (!exists) {
-                        channels.push({
-                            name: ch.name,
-                            group: ch.category || ch.group || "Premium",
-                            url: ch.url,
-                            logo: ch.logo || "",
-                            type: ch.type || "free"
-                        });
+    <script>
+        // ---------- FIREBASE INIT ----------
+        const firebaseConfig = {
+            apiKey: "AIzaSyDy4pxl68z8N7yDZfKBpZbMkfcGxtBu1JQ",
+            authDomain: "dpbhai-tv.firebaseapp.com",
+            projectId: "dpbhai-tv",
+            storageBucket: "dpbhai-tv.firebasestorage.app",
+            messagingSenderId: "361265848465",
+            appId: "1:361265848465:web:bb2c78a3cbded7180d1f30"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // ---------- MASTER STREAM LIST (VLC ready) ----------
+        const MASTER_STREAMS = [
+            // News & Hindi Entertainment - VLC compatible
+            {}
+        ];
+
+        let channels = [];
+        let currentHls = null;
+        const video = document.getElementById('videoPlayer');
+        const statusOverlay = document.getElementById('statusOverlay');
+        const allCategories = document.getElementById('allCategories');
+        const videoTitle = document.getElementById('videoTitle');
+        const videoMeta = document.getElementById('videoMeta');
+        const searchInput = document.getElementById('searchInput');
+
+        // User ID
+        if (!localStorage.getItem('userId')) {
+            localStorage.setItem('userId', 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9));
+        }
+        const userId = localStorage.getItem('userId');
+
+        // ----- Toast System -----
+        function showToast(message, type = '') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + type + ' show';
+            clearTimeout(toast._timeout);
+            toast._timeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2500);
+        }
+
+        // ----- Theme handling -----
+        function toggleTheme() {
+            const html = document.documentElement;
+            const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+            const themeIcon = next === 'dark' ? '🌙' : '☀️';
+            showToast(`${themeIcon} ${next === 'dark' ? 'डार्क' : 'लाइट'} मोड एक्टिवेट`, '');
+        }
+
+        (function initTheme() {
+            const saved = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', saved);
+        })();
+
+        // ----- Load initial streams (from master + fallback firestore) -----
+        async function loadChannels() {
+            // First: built-in VLC-ready streams
+            channels = [...MASTER_STREAMS];
+
+            // Try to load additional channels from Firestore to enrich playlist
+            try {
+                const snap = await db.collection('channels').limit(30).get();
+                snap.forEach(doc => {
+                    const ch = doc.data();
+                    if (ch && ch.url && ch.name) {
+                        // avoid duplicates by url
+                        const exists = channels.some(c => c.url === ch.url);
+                        if (!exists) {
+                            channels.push({
+                                name: ch.name,
+                                group: ch.category || ch.group || "Premium",
+                                url: ch.url,
+                                logo: ch.logo || "",
+                                type: ch.type || "free"
+                            });
+                        }
                     }
-                }
-            });
-        } catch(e) { /* silent fail, keep master list */ }
-        
-        // If still empty? fallback to master again
-        if (channels.length === 0) channels = [...MASTER_STREAMS];
-        
-        renderByCategory(channels);
-    }
+                });
+            } catch (e) {
+                console.warn('Firestore channels load failed, using master list only.');
+            }
 
-    function renderByCategory(list) {
-        const cats = {};
-        list.forEach(ch => {
-            const cat = ch.group || "Uncategorized";
-            if (!cats[cat]) cats[cat] = [];
-            cats[cat].push(ch);
+            // If still empty? fallback to master again
+            if (channels.length === 0) channels = [...MASTER_STREAMS];
+
+            renderByCategory(channels);
+            showToast(`✅ ${channels.length} चैनल लोड हो गए`, 'success');
+        }
+
+        function renderByCategory(list) {
+            const cats = {};
+            list.forEach(ch => {
+                const cat = ch.group || "Uncategorized";
+                if (!cats[cat]) cats[cat] = [];
+                cats[cat].push(ch);
+            });
+
+            let html = '';
+            for (const [cat, chs] of Object.entries(cats)) {
+                const catIcon = getCategoryIcon(cat);
+                html += `
+                <div class="cat-section">
+                    <div class="cat-header">
+                        <span class="cat-dot" aria-hidden="true"></span> 
+                        <span>${catIcon} ${cat}</span>
+                        <span class="cat-count">${chs.length} चैनल</span>
+                    </div>
+                    <div class="channel-row">`;
+
+                chs.forEach((ch, idx) => {
+                    const globalIdx = channels.findIndex(c => c.url === ch.url && c.name === ch.name);
+                    const type = ch.type || 'free';
+                    let badgeClass = 'badge-free';
+                    let badgeText = 'FREE';
+                    if (type === 'paid') { badgeClass = 'badge-paid';
+                        badgeText = 'PAID'; } else if (type === 'vip') { badgeClass = 'badge-vip';
+                        badgeText = 'VIP'; }
+
+                    const thumbHtml = ch.logo ?
+                        `<img src="${ch.logo}" alt="${escapeHtml(ch.name)}" loading="lazy" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'placeholder-icon\' aria-hidden=\'true\'>📺</span>'">` :
+                        '<span class="placeholder-icon" aria-hidden="true">📺</span>';
+
+                    html += `
+                        <div class="ch-card" 
+                             onclick="playChannelByUrl('${escapeHtml(ch.url)}', '${escapeHtml(ch.name)}', '${escapeHtml(cat)}', ${globalIdx})" 
+                             id="card-${globalIdx}"
+                             role="button"
+                             tabindex="0"
+                             aria-label="${escapeHtml(ch.name)} - ${badgeText}"
+                             onkeydown="if(event.key==='Enter'||event.key===' ')this.click()">
+                            <div class="badge-tag ${badgeClass}">${badgeText}</div>
+                            <div class="ch-thumb">
+                                ${thumbHtml}
+                            </div>
+                            <div class="ch-info">
+                                <div class="ch-name" title="${escapeHtml(ch.name)}">${escapeHtml(ch.name)}</div>
+                                <div class="ch-cat">${escapeHtml(cat)}</div>
+                            </div>
+                        </div>`;
+                });
+                html += `</div></div>`;
+            }
+            allCategories.innerHTML = html || '<p style="text-align:center;padding:40px;color:var(--text-muted);"><i class="fa-solid fa-circle-exclamation"></i> ⚡ कोई चैनल नहीं मिला</p>';
+            videoMeta.textContent = list.length + ' चैनल • VLC कम्पैटिबल • HD उपलब्ध';
+        }
+
+        function getCategoryIcon(cat) {
+            const catLower = cat.toLowerCase();
+            if (catLower.includes('news') || catLower.includes('न्यूज़')) return '📰';
+            if (catLower.includes('sports') || catLower.includes('खेल')) return '⚽';
+            if (catLower.includes('movie') || catLower.includes('film') || catLower.includes('सिनेमा')) return '🎬';
+            if (catLower.includes('music') || catLower.includes('song') || catLower.includes('संगीत')) return '🎵';
+            if (catLower.includes('entertain') || catLower.includes('मनोरंजन')) return '🎭';
+            if (catLower.includes('kids') || catLower.includes('बच्चे')) return '🧒';
+            if (catLower.includes('devotion') || catLower.includes('भक्ति')) return '🛕';
+            if (catLower.includes('premium') || catLower.includes('vip')) return '⭐';
+            return '📺';
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        // Search filter with debounce
+        let searchTimeout;
+        searchInput.addEventListener('input', () => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                const q = searchInput.value.toLowerCase().trim();
+                const filtered = channels.filter(ch =>
+                    ch.name.toLowerCase().includes(q) ||
+                    (ch.group && ch.group.toLowerCase().includes(q))
+                );
+                renderByCategory(filtered);
+                if (q && filtered.length === 0) {
+                    showToast('😕 कोई चैनल नहीं मिला', '');
+                }
+            }, 300);
         });
 
-        let html = '';
-        for (const [cat, chs] of Object.entries(cats)) {
-            html += `<div class="cat-section"><div class="cat-header"><span class="cat-dot"></span> ${cat} <span class="cat-count">${chs.length}</span></div><div class="channel-row">`;
-            chs.forEach((ch, idx) => {
-                const globalIdx = channels.findIndex(c => c.url === ch.url && c.name === ch.name);
-                const type = ch.type || 'free';
-                let badgeClass = 'badge-free';
-                let badgeText = 'FREE';
-                if (type === 'paid') { badgeClass = 'badge-paid'; badgeText = 'PAID'; }
-                else if (type === 'vip') { badgeClass = 'badge-vip'; badgeText = 'VIP'; }
-                
-                const thumbHtml = ch.logo ? `<img src="${ch.logo}" onerror="this.style.display='none';this.parentElement.innerHTML='<span style=font-size:2rem>📺</span>'">` : '<span style="font-size:2rem;">📺</span>';
-                html += `
-                    <div class="ch-card" onclick="playChannelByUrl('${escapeHtml(ch.url)}', '${escapeHtml(ch.name)}', '${cat}', ${globalIdx})" id="card-${globalIdx}">
-                        <div class="badge-tag ${badgeClass}">${badgeText}</div>
-                        <div class="ch-thumb">
-                            ${thumbHtml}
-                        </div>
-                        <div class="ch-info">
-                            <div class="ch-name">${escapeHtml(ch.name)}</div>
-                            <div class="ch-cat">${escapeHtml(cat)}</div>
-                        </div>
+        // ----- Membership check for paid/vip -----
+        async function checkMembership() {
+            try {
+                const doc = await db.collection('users').doc(userId).get();
+                if (doc.exists && doc.data().expiry && doc.data().expiry > new Date().toISOString()) return true;
+            } catch (e) {
+                console.warn('Membership check failed:', e);
+            }
+            return false;
+        }
+
+        function showPaymentPopup() {
+            // Remove existing popup if any
+            const existing = document.querySelector('.payment-popup');
+            if (existing) existing.remove();
+
+            const popup = document.createElement('div');
+            popup.className = 'payment-popup';
+            popup.style.cssText = `
+                position:fixed;top:0;left:0;width:100%;height:100%;
+                background:rgba(0,0,0,0.95);z-index:9999;
+                display:flex;align-items:center;justify-content:center;
+                padding:20px;backdrop-filter:blur(12px);
+                -webkit-backdrop-filter:blur(12px);
+                animation: fadeInScale 0.3s ease-out;
+            `;
+            popup.innerHTML = `
+                <div style="
+                    background:var(--bg-card);padding:28px;border-radius:var(--radius-lg);
+                    text-align:center;max-width:420px;width:100%;
+                    border:2px solid var(--gold);
+                    box-shadow: 0 0 40px var(--gold-glow), var(--shadow-lg);
+                ">
+                    <div style="font-size:3rem;margin-bottom:8px;">👑</div>
+                    <h2 style="color:var(--gold);font-weight:800;margin-bottom:4px;">प्रीमियम एक्सेस</h2>
+                    <p style="color:var(--text-secondary);margin:12px 0;font-size:0.9rem;line-height:1.6;">
+                        यह <strong>VIP/PAID</strong> चैनल है। मेंबरशिप लें और सभी HD स्ट्रीम्स का आनंद लें
+                        <br><small style="color:var(--text-muted);">(VLC / MPV / FFmpeg कम्पैटिबल)</small>
+                    </p>
+                    <div id="popupPlans" style="text-align:left;margin:16px 0;"></div>
+                    <div id="popupQR" style="margin-top:12px;"></div>
+                    <button onclick="this.closest('.payment-popup').remove()" style="
+                        margin-top:20px;padding:12px 36px;
+                        background:var(--gradient-accent);border:none;
+                        border-radius:var(--radius-full);color:#fff;
+                        font-weight:700;cursor:pointer;font-size:0.9rem;
+                        transition:all var(--transition-bounce);
+                        box-shadow: var(--shadow-glow);
+                        font-family: var(--font-family);
+                    " onmouseover="this.style.transform='translateY(-2px)'" 
+                       onmouseout="this.style.transform='translateY(0)'">
+                        <i class="fa-solid fa-arrow-left"></i> वापस जाएं
+                    </button>
+                </div>`;
+            document.body.appendChild(popup);
+
+            // Close on background click
+            popup.addEventListener('click', function(e) {
+                if (e.target === popup) popup.remove();
+            });
+
+            // Load plans from Firestore
+            db.collection('plans').get().then(snap => {
+                let html = '<h4 style="color:var(--gold);margin-bottom:8px;">📋 सदस्यता योजनाएं:</h4>';
+                if (snap.empty) {
+                    html += `
+                        <div style="background:var(--bg-card-hover);padding:12px;margin:8px 0;border-radius:var(--radius-sm);border:1px solid var(--border-color);">
+                            <p style="margin:0;font-weight:600;">✨ 1 महीना <span style="color:var(--gold);">₹199</span></p>
+                            <p style="margin:4px 0 0;font-size:0.8rem;color:var(--text-muted);">3 महीने ₹499 | 1 साल ₹1499</p>
+                        </div>`;
+                }
+                snap.forEach(doc => {
+                    const p = doc.data();
+                    html += `
+                        <div style="background:var(--bg-card-hover);padding:12px;margin:8px 0;border-radius:var(--radius-sm);border:1px solid var(--border-color);">
+                            <b>${escapeHtml(p.name)}</b> - <span style="color:var(--gold);">₹${p.price}</span> / ${p.duration} दिन
+                            <br><small style="color:var(--text-muted);">${escapeHtml(p.features || 'सभी प्रीमियम चैनल')}</small>
+                        </div>`;
+                });
+                document.getElementById('popupPlans').innerHTML = html;
+            }).catch(() => {
+                document.getElementById('popupPlans').innerHTML = `
+                    <div style="background:var(--bg-card-hover);padding:12px;border-radius:var(--radius-sm);border:1px solid var(--border-color);">
+                        <b>⭐ VIP प्लान</b><br>
+                        <span style="color:var(--gold);">महीना ₹299</span> | सालाना ₹2499<br>
+                        <small style="color:var(--text-muted);">📞 संपर्क करें: @DPBHAI</small>
                     </div>`;
             });
-            html += `</div></div>`;
-        }
-        allCategories.innerHTML = html || '<p style="text-align:center;padding:30px;">⚡ कोई चैनल नहीं मिला</p>';
-        videoMeta.textContent = list.length + ' चैनल • VLC कम्पैटिबल';
-    }
 
-    function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, function(m){if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
-
-    // Search filter
-    searchInput.addEventListener('input', () => {
-        const q = searchInput.value.toLowerCase();
-        const filtered = channels.filter(ch => ch.name.toLowerCase().includes(q) || (ch.group && ch.group.toLowerCase().includes(q)));
-        renderByCategory(filtered);
-    });
-
-    // ----- membership check for paid/vip -----
-    async function checkMembership() {
-        try {
-            const doc = await db.collection('users').doc(userId).get();
-            if (doc.exists && doc.data().expiry && doc.data().expiry > new Date().toISOString()) return true;
-        } catch(e) {}
-        return false;
-    }
-
-    function showPaymentPopup() {
-        const popup = document.createElement('div');
-        popup.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.96);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(8px);';
-        popup.innerHTML = `
-            <div style="background:var(--surface);padding:25px;border-radius:24px;text-align:center;max-width:400px;width:100%;border:1px solid var(--gold);">
-                <h2 style="color:var(--gold);">👑 प्रीमियम एक्सेस</h2>
-                <p style="color:var(--text-secondary);margin:10px 0;">यह VIP/PAID चैनल है। मेंबरशिप लें और सभी HD स्ट्रीम्स का आनंद लें (VLC compatible)</p>
-                <div id="popupPlans" style="text-align:left;margin:15px 0;"></div>
-                <div id="popupQR" style="margin-top:10px;"></div>
-                <button onclick="this.closest('div').parentElement.remove()" style="margin-top:20px;padding:10px 30px;background:var(--accent);border:none;border-radius:40px;color:#fff;font-weight:bold;cursor:pointer;">वापस जाएं</button>
-            </div>`;
-        document.body.appendChild(popup);
-        
-        db.collection('plans').get().then(snap => {
-            let html = '<h4 style="color:var(--gold);">📋 सदस्यता योजनाएं:</h4>';
-            if(snap.empty) html += '<p>✨ 1 महीना ₹199, 3 महीने ₹499, 1 साल ₹1499</p>';
-            snap.forEach(doc => {
-                const p = doc.data();
-                html += `<div style="background:var(--card);padding:10px;margin:8px 0;border-radius:12px;"><b>${p.name}</b> - ₹${p.price} / ${p.duration} दिन<br><small>${p.features || 'सभी प्रीमियम चैनल'}</small></div>`;
-            });
-            document.getElementById('popupPlans').innerHTML = html;
-        }).catch(()=> {
-            document.getElementById('popupPlans').innerHTML = '<div><b>⭐ VIP प्लान</b><br>महीना ₹299 | सालाना ₹2499<br>📞 संपर्क करें: @DPBHAI</div>';
-        });
-        
-        db.collection('settings').doc('payment').get().then(doc => {
-            if(doc.exists) {
-                const d = doc.data();
-                let html = '<h4 style="color:var(--gold);">💸 भुगतान विकल्प:</h4>';
-                if(d.upiId) html += `<p>UPI: <b>${d.upiId}</b></p>`;
-                if(d.qrImageUrl) html += `<img src="${d.qrImageUrl}" style="width:180px;border-radius:12px;margin-top:8px;">`;
-                document.getElementById('popupQR').innerHTML = html;
-            } else {
-                document.getElementById('popupQR').innerHTML = '<p>📱 UPI: dpbhai@okhdfcbank | QR टेलीग्राम पर उपलब्ध</p>';
-            }
-        }).catch(()=>{
-            document.getElementById('popupQR').innerHTML = '<p>📱 UPI: dpbhai@okhdfcbank | @DPBHAI पर संपर्क करें</p>';
-        });
-    }
-
-    // Core play function with VLC compatibility (HLS + native)
-    async function playChannelByUrl(url, name, category, idx) {
-        if (!url) return;
-        // Find original channel object to detect type
-        const channelObj = channels.find(c => c.url === url) || { type: 'free', name: name };
-        
-        if (channelObj.type === 'paid' || channelObj.type === 'vip') {
-            const hasAccess = await checkMembership();
-            if (!hasAccess) {
-                showPaymentPopup();
-                return;
-            }
-        }
-        
-        // UI active highlight
-        document.querySelectorAll('.ch-card').forEach(el => el.classList.remove('active'));
-        const activeCard = document.getElementById('card-'+idx);
-        if (activeCard) activeCard.classList.add('active');
-        
-        video.style.display = 'block';
-        statusOverlay.style.display = 'none';
-        videoTitle.textContent = '🔴 ' + name;
-        videoMeta.textContent = (category || 'Premium') + ' • VLC स्ट्रीम';
-        
-        // Destroy old HLS
-        if (currentHls) { currentHls.destroy(); currentHls = null; }
-        
-        // For HLS streams -> use HLS.js else native (also mp4/ts etc works natively)
-        if (Hls.isSupported() && (url.includes('.m3u8') || url.includes('m3u8'))) {
-            currentHls = new Hls({ debug: false, enableWorker: true });
-            currentHls.loadSource(url);
-            currentHls.attachMedia(video);
-            currentHls.on(Hls.Events.MANIFEST_PARSED, () => {
-                video.play().catch(err => console.warn("Autoplay blocked:", err));
-            });
-            currentHls.on(Hls.Events.ERROR, (event, data) => {
-                if (data.fatal) {
-                    statusOverlay.style.display = 'block';
-                    statusOverlay.innerHTML = '<span style="font-size:1.8rem;">⚠️</span><br>स्ट्रीम लोड नहीं हुई (VLC लिंक हो सकता है)';
-                    video.style.display = 'none';
+            // Load payment info
+            db.collection('settings').doc('payment').get().then(doc => {
+                if (doc.exists) {
+                    const d = doc.data();
+                    let html = '<h4 style="color:var(--gold);margin-bottom:8px;">💸 भुगतान विकल्प:</h4>';
+                    if (d.upiId) html += `<p style="margin:4px 0;">UPI: <b style="color:var(--text-primary);">${escapeHtml(d.upiId)}</b></p>`;
+                    if (d.qrImageUrl) html +=
+                        `<img src="${escapeHtml(d.qrImageUrl)}" alt="QR Code" style="width:180px;border-radius:var(--radius-sm);margin-top:8px;border:2px solid var(--border-color);">`;
+                    document.getElementById('popupQR').innerHTML = html;
+                } else {
+                    document.getElementById('popupQR').innerHTML = `
+                        <p style="color:var(--text-muted);font-size:0.85rem;">
+                            📱 UPI: <b>dpbhai@okhdfcbank</b><br>
+                            QR कोड टेलीग्राम पर उपलब्ध
+                        </p>`;
                 }
+            }).catch(() => {
+                document.getElementById('popupQR').innerHTML = `
+                    <p style="color:var(--text-muted);font-size:0.85rem;">
+                        📱 UPI: <b>dpbhai@okhdfcbank</b><br>
+                        📞 @DPBHAI पर संपर्क करें
+                    </p>`;
             });
-        } else {
-            // For direct .ts, .mp4, .mkv or any VLC-friendly link (including HTTP streams)
-            video.src = url;
+        }
+
+        // Core play function with VLC compatibility (HLS + native)
+        async function playChannelByUrl(url, name, category, idx) {
+            if (!url) return;
+
+            // Find original channel object to detect type
+            const channelObj = channels.find(c => c.url === url) || { type: 'free', name: name };
+
+            if (channelObj.type === 'paid' || channelObj.type === 'vip') {
+                const hasAccess = await checkMembership();
+                if (!hasAccess) {
+                    showPaymentPopup();
+                    return;
+                }
+            }
+
+            // UI active highlight
+            document.querySelectorAll('.ch-card').forEach(el => el.classList.remove('active'));
+            const activeCard = document.getElementById('card-' + idx);
+            if (activeCard) {
+                activeCard.classList.add('active');
+                // Scroll into view if needed
+                activeCard.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
+
+            video.style.display = 'block';
+            statusOverlay.style.display = 'none';
+            videoTitle.innerHTML =
+                '<span class="now-playing-dot"></span> ' + escapeHtml(name);
+            videoMeta.textContent = (category || 'Premium') + ' • VLC स्ट्रीम • HD';
+
+            // Destroy old HLS
+            if (currentHls) {
+                currentHls.destroy();
+                currentHls = null;
+            }
+
+            // Reset video source
+            video.removeAttribute('src');
             video.load();
-            video.play().catch(err => {
+
+            // For HLS streams -> use HLS.js else native
+            if (Hls.isSupported() && (url.includes('.m3u8') || url.includes('m3u8'))) {
+                currentHls = new Hls({
+                    debug: false,
+                    enableWorker: true,
+                    lowLatencyMode: false,
+                    backBufferLength: 90
+                });
+                currentHls.loadSource(url);
+                currentHls.attachMedia(video);
+                currentHls.on(Hls.Events.MANIFEST_PARSED, () => {
+                    video.play().catch(err => console.warn("Autoplay blocked:", err));
+                    showToast('▶️ स्ट्रीमिंग शुरू: ' + name, 'success');
+                });
+                currentHls.on(Hls.Events.ERROR, (event, data) => {
+                    if (data.fatal) {
+                        statusOverlay.style.display = 'block';
+                        statusOverlay.innerHTML =
+                            '<span class="status-icon">⚠️</span><span class="status-text">स्ट्रीम लोड नहीं हुई — कृपया दूसरा चैनल चुनें</span>';
+                        video.style.display = 'none';
+                        showToast('❌ स्ट्रीम एरर: ' + name, '');
+                    }
+                });
+            } else {
+                // For direct .ts, .mp4, .mkv or any VLC-friendly link
+                video.src = url;
+                video.load();
+                video.play().then(() => {
+                    showToast('▶️ प्ले हो रहा है: ' + name, 'success');
+                }).catch(err => {
+                    statusOverlay.style.display = 'block';
+                    statusOverlay.innerHTML =
+                        '<span class="status-icon">❗</span><span class="status-text">स्ट्रीम शुरू नहीं हुई, दोबारा प्रयास करें</span>';
+                    console.warn('Playback failed:', err);
+                });
+            }
+
+            // Fallback: if video hangs, show reconnection hint
+            video.onerror = () => {
                 statusOverlay.style.display = 'block';
-                statusOverlay.innerHTML = '<span>❗ स्ट्रीम शुरू नहीं हुई, कृपया दोबारा प्रयास करें</span>';
-            });
+                statusOverlay.innerHTML =
+                    '<span class="status-icon">📡</span><span class="status-text">लिंक काम नहीं कर रहा — दूसरा चैनल चुनें</span>';
+                video.style.display = 'none';
+                showToast('🔌 कनेक्शन एरर', '');
+            };
+
+            // Track play event (optional)
+            try {
+                await db.collection('analytics').add({
+                    userId: userId,
+                    channel: name,
+                    url: url,
+                    timestamp: new Date().toISOString(),
+                    type: 'play'
+                });
+            } catch (e) { /* silent */ }
         }
-        
-        // Additional fallback: if video hangs, show reconnection hint
-        video.onerror = () => {
-            statusOverlay.style.display = 'block';
-            statusOverlay.innerHTML = '<span>📡 लिंक काम नहीं कर रहा, दूसरा चैनल चुनें</span>';
-            video.style.display = 'none';
-        };
-    }
-    
-    // Legacy support for onclick via index (backward)
-    async function playChannel(index) {
-        if (index >= 0 && channels[index]) {
-            const ch = channels[index];
-            await playChannelByUrl(ch.url, ch.name, ch.group, index);
+
+        // Legacy support for onclick via index (backward compatibility)
+        async function playChannel(index) {
+            if (index >= 0 && channels[index]) {
+                const ch = channels[index];
+                await playChannelByUrl(ch.url, ch.name, ch.group, index);
+            }
         }
-    }
-    
-    // Like & share feature
-    function toggleLike() {
-        const btn = document.getElementById('likeBtn');
-        btn.classList.toggle('liked');
-        let c = parseInt(document.getElementById('likeCount').textContent);
-        document.getElementById('likeCount').textContent = btn.classList.contains('liked') ? c+1 : (c>0?c-1:0);
-        localStorage.setItem('channelLiked', btn.classList.contains('liked') ? 'true' : 'false');
-    }
-    
-    function shareSite() {
-        if (navigator.share) navigator.share({ title: 'DP BHAI TV VIP', text: 'प्रीमियम IPTV हिंदी चैनल VLC सपोर्ट', url: location.href });
-        else prompt('📋 लिंक कॉपी करें:', location.href);
-    }
-    
-    // restore like count
-    (function initLike() {
-        const liked = localStorage.getItem('channelLiked') === 'true';
-        if (liked) {
+
+        // Like & share feature
+        function toggleLike() {
             const btn = document.getElementById('likeBtn');
-            btn.classList.add('liked');
-            document.getElementById('likeCount').textContent = '1';
-        } else document.getElementById('likeCount').textContent = '0';
-    })();
-    
-    // Initialize the full player
-    loadChannels();
-</script>
+            const countSpan = document.getElementById('likeCount');
+            btn.classList.toggle('liked');
+            let c = parseInt(countSpan.textContent);
+            const isLiked = btn.classList.contains('liked');
+            countSpan.textContent = isLiked ? c + 1 : (c > 0 ? c - 1 : 0);
+            localStorage.setItem('channelLiked', isLiked ? 'true' : 'false');
+
+            if (isLiked) {
+                showToast('❤️ पसंद किया गया!', 'success');
+                // Haptic feedback if available
+                if (navigator.vibrate) navigator.vibrate(15);
+            }
+        }
+
+        function shareSite() {
+            const shareData = {
+                title: 'DP BHAI TV 👑 प्रीमियम IPTV',
+                text: 'प्रीमियम IPTV हिंदी चैनल — VLC कम्पैटिबल स्ट्रीम्स',
+                url: location.href
+            };
+
+            if (navigator.share) {
+                navigator.share(shareData).catch(() => {
+                    fallbackShare();
+                });
+            } else {
+                fallbackShare();
+            }
+
+            function fallbackShare() {
+                navigator.clipboard.writeText(location.href).then(() => {
+                    showToast('📋 लिंक कॉपी हो गया!', 'success');
+                }).catch(() => {
+                    prompt('📋 लिंक कॉपी करें (Ctrl+C):', location.href);
+                });
+            }
+        }
+
+        // Restore like state
+        (function initLike() {
+            const liked = localStorage.getItem('channelLiked') === 'true';
+            const btn = document.getElementById('likeBtn');
+            const countSpan = document.getElementById('likeCount');
+            if (liked) {
+                btn.classList.add('liked');
+                countSpan.textContent = '1';
+            } else {
+                countSpan.textContent = '0';
+            }
+        })();
+
+        // Keyboard shortcut for search focus
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                searchInput.focus();
+            }
+            // Escape to clear search
+            if (e.key === 'Escape' && document.activeElement === searchInput) {
+                searchInput.value = '';
+                searchInput.blur();
+                renderByCategory(channels);
+            }
+        });
+
+        // Initialize the full player
+        loadChannels().then(() => {
+            console.log('✅ DP BHAI TV PRO initialized successfully');
+        }).catch(err => {
+            console.error('Initialization error:', err);
+            showToast('⚠️ कुछ एरर आया, रीफ्रेश करें', '');
+        });
+
+        // Service worker registration for PWA (optional)
+        if ('serviceWorker' in navigator) {
+            // You can add a service worker for offline caching later
+            // navigator.serviceWorker.register('/sw.js').catch(() => {});
+        }
+
+        // Log performance
+        window.addEventListener('load', () => {
+            if (window.performance) {
+                const perfData = window.performance.timing;
+                const loadTime = perfData.loadEventEnd - perfData.navigationStart;
+                if (loadTime > 3000) {
+                    console.warn('Page load took ' + loadTime + 'ms');
+                }
+            }
+        });
+    </script>
 </body>
 </html>
